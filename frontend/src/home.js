@@ -2,27 +2,47 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 function Home(props) {
+    if (props.loggedIn) {
+        return LoggedInHome(props);
+    }
+    else {
+        return LoggedOutHome(props);
+    }
+}
+
+function LoggedInHome(props) {
     return (
         <div>
             <h1>Gardenplace</h1>
-            <Link to="/about">Connect</Link>
-            <Link to="/about">About</Link>
-            <Link to="/about">Settings</Link>
-            <Link to="/about">Logout</Link>
-            <Navbar></Navbar>
+            <Navbar loggedIn={props.loggedIn}></Navbar>
             Favorite Gardens
             <FavoriteGardens></FavoriteGardens>
             Favorite Plants
             <FavoritePlants></FavoritePlants>
             Connections Activity
-            <ConnectionsActivity></ConnectionsActivity>        
+            <ConnectionsActivity></ConnectionsActivity>
+        </div>
+    )    
+}
+
+function LoggedOutHome(props) {
+    return (
+        <div>
+            <h1>Gardenplace</h1>
+            <Link to="/login">Login</Link>            
+            <Link to="/register">Register</Link>
         </div>
     )
 }
 
 function Navbar(props) {
     return (
-        <div></div>
+        <div>
+            <Link to="/about">Connect</Link>
+            <Link to="/about">About</Link>
+            <Link to="/about">Settings</Link>
+            <Link to="/about">Logout</Link>
+        </div>
     )
 }
 
