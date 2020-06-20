@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Switch, Route, useHistory } from "react-router-dom";
 import Home from "./home";
@@ -10,17 +10,12 @@ import { checkLoggedIn } from "./auth";
 
 function App(props) {
     const history = useHistory();
-    const [registrationFailed, setRegistrationFailed] = useState(false);
     const [loggedIn, setLoggedIn] = useState(false);
     const [userID, setUserID] = useState(-1);
 
     function handleRegistrationSuccess(response_data) {
         checkLoggedIn(setLoggedIn, setUserID);
         history.pushState("/register_twofactor");
-    }
-
-    function handleRegistrationError(response_data) {
-        setRegistrationFailed(true);
     }
 
     return (
@@ -36,7 +31,7 @@ function App(props) {
                     )}
                     />
                     <Route exact path={"/register"} render={props => (
-                        <Register {... props} handleRegistrationSuccess={handleRegistrationSuccess} handleRegistrationError={handleRegistrationError} registrationFailed={registrationFailed} />
+                        <Register {... props} handleRegistrationSuccess={handleRegistrationSuccess} />
                     )}
                     />
                     <Route exact path={"/register_twofactor"} render={props => (

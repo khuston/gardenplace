@@ -7,9 +7,10 @@ function Register(props) {
         default_registration_payload()
     )
 
-    let error_message = "";
-    if (props.registrationFailed) {
-        error_message = "Registration failed. Try again later. :("
+    const [registrationStatus, setRegistrationStatus] = useState("");
+
+    function handleRegistrationError(event) {
+        setRegistrationStatus("FAILED");
     }
 
     function handleChange(event) {
@@ -24,9 +25,11 @@ function Register(props) {
     function handleSubmit(event) {
         event.preventDefault();
 
+        setRegistrationStatus("IN PROGRESS");
+
         const { email, password, password_reentered } = state;
 
-        registerUser(email, password, password_reentered, props.handleRegistrationSuccess, props.handleRegistrationError);
+        registerUser(email, password, password_reentered, props.handleRegistrationSuccess, handleRegistrationError);
 
         return false; // Prevent default submit behavior since we override it
     }
@@ -35,7 +38,7 @@ function Register(props) {
         <div>
             <h1>Gardenplace</h1>
             <Link to="/">Home</Link>
-            <p>{error_message}</p>
+            <RegistrationStatus registrationStatus={registrationStatus} />
             <form onSubmit={handleSubmit}>
                 <input type="email" name="email" placeholder="E-mail address" value={state.email} onChange={handleChange} required />
                 <input type="password" name="password" placeholder="Password" value={state.password} onChange={handleChange} required />
@@ -43,6 +46,20 @@ function Register(props) {
                 <button type="submit">Register</button>
             </form>
         </div>
+    )
+}
+
+function RegistrationStatus(props) {
+    let status_message = "";
+    if (props.registrationStatus === "FAILED") {
+        status_message = "Registration failed. Try again later. :("
+    }
+    else if (props.registrationStatus === "IN PROGRESS") {
+        status_message ="Registration in progress."
+    }
+
+    return (
+        <div>{status_message}</div>
     )
 }
 
