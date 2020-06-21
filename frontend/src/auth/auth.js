@@ -38,8 +38,30 @@ export function registerUser(email, password, password_reentered, handleSuccess,
         })
 }
 
+export function loginUser(email, password, handleSuccess, handleError, handleRequireTwoFactor) {
+    let payload = make_login_payload(email, password);
+
+    axios
+        .post(login_requires_twofactor_endpoint, payload)
+        .then(response => {
+            if (response.data.status === "created") { // TODO: What will the response status be?
+
+                // if two factor required, ask user for it
+
+                handleSuccess(error);
+            }
+        })
+        .catch(error => {
+            handleError(error);
+        })
+}
+
 export function default_registration_payload() {
     return make_registration_payload("", "", "")
+}
+
+export function default_login_payload() {
+    return make_login_payload("", "", "")
 }
 
 function make_registration_payload(email, password, password_reentered) {
@@ -47,5 +69,13 @@ function make_registration_payload(email, password, password_reentered) {
         email: email,
         password: password,
         password_reentered: password_reentered
+    }
+}
+
+function make_login_payload(email, password, one_time_password) {
+    return {
+        email: email,
+        password: password,
+        one_time_password: one_time_password
     }
 }

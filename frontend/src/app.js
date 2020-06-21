@@ -3,9 +3,9 @@ import ReactDOM from "react-dom";
 import { BrowserRouter, Switch, Route, useHistory } from "react-router-dom";
 import Home from "./home";
 import About from "./about";
-import Register from "./register";
-import RegisterTwofactor from "./register_twofactor";
-import { checkLoggedIn } from "./auth";
+import Register from "./auth/register";
+import RegisterTwofactor from "./auth/register_twofactor";
+import { checkLoggedIn } from "./auth/auth";
 
 
 function App(props) {
@@ -28,6 +28,10 @@ function App(props) {
                     />
                     <Route exact path={"/about"} render={props => (
                         <About {... props} loggedIn={loggedIn} />
+                    )}
+                    />
+                    <Route exact path={"/login"} render={props => (
+                        <Login {... props} />
                     )}
                     />
                     <Route exact path={"/register"} render={props => (
