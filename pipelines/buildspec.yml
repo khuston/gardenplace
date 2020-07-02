@@ -9,10 +9,10 @@ env:
   exported-variables:
     - GOPATH
   secrets-manager:
-    db-username: gardenplace-db-credentials:username
-    db-password: gardenplace-db-credentials:password
-    db-host: gardenplace-db-credentials:host
-    db-port: gardenplace-db-credentials:port
+    DB_USERNAME: gardenplace-db-credentials:username
+    DB_PASSWORD: gardenplace-db-credentials:password
+    DB_HOST: gardenplace-db-credentials:host
+    DB_PORT: gardenplace-db-credentials:port
 
 phases:
   install:
@@ -26,7 +26,8 @@ phases:
       - cd
   post_build:
     commands:
-      - echo '
-{
-    "UserDBConnectionString": "$(db-username):$(db-password)@tcp($(db-host):$(db-port))/gardenplace"
-}' > $(GOPATH)/config.json
+      - |
+        echo '
+        {
+          "UserDBConnectionString": "'$DB_USERNAME':'$DB_PASSWORD'@tcp('$DB_HOST':'$DB_PORT')/gardenplace"
+        }' > $GOPATH/config.json
