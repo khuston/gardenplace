@@ -35,5 +35,4 @@ artifacts:
     - backend/auth/gardenplace
     - backend/auth/config.json
     - appspec.yml
-    - scripts
-  name: myname-$(date +%Y-%m-%d) 
+    - scripts/*
