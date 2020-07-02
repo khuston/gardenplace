@@ -26,7 +26,7 @@ phases:
       - cd
   post_build:
     commands:
-      - echo "
+      - echo '
 {
     "UserDBConnectionString": "$(db-username):$(db-password)@tcp($(db-host):$(db-port))/gardenplace"
-}" > $(GOPATH)/config.json
+}' > $(GOPATH)/config.json
