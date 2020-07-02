@@ -12,7 +12,7 @@ env:
     db-username: gardenplace-db-credentials:username
     db-password: gardenplace-db-credentials:password
     db-host: gardenplace-db-credentials:host
-    db-port: gardenplace-db-credentials:prt
+    db-port: gardenplace-db-credentials:port
 
 phases:
   install:
@@ -20,7 +20,10 @@ phases:
       golang: latest
   build:
     commands:
+      - cd backend/auth
       - go build
+    finally:
+      - cd
   post_build:
     commands:
       - echo "
