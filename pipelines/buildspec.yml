@@ -4,10 +4,6 @@ run-as: root
 
 env:
   shell: bash
-  variables:
-    GOPATH: "/go/"
-  exported-variables:
-    - GOPATH
   secrets-manager:
     DB_USERNAME: gardenplace-db-credentials:username
     DB_PASSWORD: gardenplace-db-credentials:password
@@ -26,17 +22,6 @@ phases:
       - cd
   post_build:
     commands:
-      - echo "Hello" > config.json
-      - echo "Hello" > $GOPATH/config.json
-      - echo $DB_USERNAME > $GOPATH/config.json
-      - echo $DB_PASSWORD > $GOPATH/config.json
-      - echo $DB_HOST > $GOPATH/config.json
-      - echo $DB_PORT > $GOPATH/config.json
-      - |
-        echo "
-        {
-          \"UserDBConnectionString\": \""$DB_USERNAME":"$DB_PASSWORD"@tcp("$DB_HOST":"$DB_PORT")/gardenplace\"
-        }" > $GOPATH/config.json
       - |
         echo "
         {
