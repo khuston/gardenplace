@@ -11,9 +11,6 @@ permissions:
     type:
       - directory
 hooks:
-  ApplicationStop:
-    - location: scripts/application_stop.sh
-      timeout: 5
   ApplicationStart:
     - location: scripts/application_start.sh
       timeout: 5
