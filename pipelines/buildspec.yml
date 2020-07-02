@@ -1,0 +1,29 @@
+version: 0.2
+
+run-as: root
+
+env:
+  shell: bash
+  variables:
+    GOPATH: "/go/"
+  exported-variables:
+    - GOPATH
+  secrets-manager:
+    db-username: gardenplace-db-credentials:username
+    db-password: gardenplace-db-credentials:password
+    db-host: gardenplace-db-credentials:host
+    db-port: gardenplace-db-credentials:prt
+
+phases:
+  install:
+    runtime-versions:
+      golang: latest
+  build:
+    commands:
+      - go build
+  post_build:
+    commands:
+      - echo "
+{
+    "UserDBConnectionString": "$(db-username):$(db-password)@tcp($(db-host):$(db-port))/gardenplace"
+}" > $(GOPATH)/config.json
