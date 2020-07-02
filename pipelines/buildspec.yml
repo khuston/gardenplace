@@ -19,7 +19,7 @@ phases:
       - cd backend/auth
       - go build
     finally:
-      - cd
+      - echo $(ls)
   post_build:
     commands:
       - |
@@ -27,8 +27,11 @@ phases:
         {
           \"UserDBConnectionString\": \""$DB_USERNAME":"$DB_PASSWORD"@tcp("$DB_HOST":"$DB_PORT")/gardenplace\"
         }" > config.json
+    finally:
+      - echo $(ls)
+      - cd
 artifacts:
   files:
-    - backend/auth/gardenplace.exe
+    - backend/auth/gardenplace
     - backend/auth/config.json
   name: myname-$(date +%Y-%m-%d) 
