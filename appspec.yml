@@ -1,0 +1,19 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination:/webapps/gardenplace
+permissions:
+  - object: /webapps/gardenplace
+    pattern: "**"
+    owner: ec2-user
+    mode: 644
+    type:
+      - directory
+hooks:
+  ApplicationStop:
+    - location: scripts/application_stop.sh
+      timeout: 5
+  ApplicationStart:
+    - location: scripts/application_start.sh
+      timeout: 5
