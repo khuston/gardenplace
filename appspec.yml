@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination:/webapps/gardenplace
+    destination: /webapps/gardenplace
 permissions:
   - object: /webapps/gardenplace
     pattern: "**"
