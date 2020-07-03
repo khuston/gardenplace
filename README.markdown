@@ -19,7 +19,7 @@ python3.8 -m http.server
 After manually killing the old server processes, adjust the following variables accordingly and create the deployment.
 ```bash
 ARTIFACT_S3_BUCKET=codepipeline-us-east-2-478458351072
-ARTIFACT_KEY=gardenplace/BuildArtif/CHq8noU
+ARTIFACT_KEY=gardenplace/BuildArtif/l3HjvLH
 aws deploy create-deployment --application-name gardenplace --deployment-group-name gardenplace-production --revision "revisionType=S3,s3Location={bucket="$ARTIFACT_S3_BUCKET",key="$ARTIFACT_KEY",bundleType=zip}" --ignore-application-stop-failures
 ```
 
