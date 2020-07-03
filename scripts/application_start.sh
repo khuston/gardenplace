@@ -1,2 +1,2 @@
-cd /webapps/gardenplace/backend/auth
-nohup gardenplace & echo $! > pidfile & disown $(cat pidfile)
+cd /webapps/gardenplace
+nohup backend/auth/gardenplace & echo $! > auth_pidfile
