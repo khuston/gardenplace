@@ -35,6 +35,9 @@ export function registerUser(email, password, password_reentered, handleSuccess,
             if (response.status === 201) {
                 handleSuccess();
             }
+            else {
+                handleError(response.data)
+            }
         })
         .catch(error => {
             handleError(error.response.data);
