@@ -12,7 +12,7 @@ type RegistrationPayload struct {
 	Email             string
 	Password          string
 	PasswordReentered string
-	SessionID         string
+	SessionID         int64
 }
 
 func (payload RegistrationPayload) validate() error {

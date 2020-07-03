@@ -9,8 +9,8 @@ function Register(props) {
 
     const [registrationStatus, setRegistrationStatus] = useState("");
 
-    function handleRegistrationError(event) {
-        setRegistrationStatus("FAILED");
+    function handleRegistrationError(response_data) {
+        setRegistrationStatus(response_data);
     }
 
     function handleChange(event) {
@@ -51,11 +51,11 @@ function Register(props) {
 
 function RegistrationStatus(props) {
     let status_message = "";
-    if (props.registrationStatus === "FAILED") {
-        status_message = "Registration failed. Try again later. :("
-    }
-    else if (props.registrationStatus === "IN PROGRESS") {
+    if (props.registrationStatus === "IN PROGRESS") {
         status_message ="Registration in progress."
+    }
+    else {
+        status_message = props.registrationStatus
     }
 
     return (

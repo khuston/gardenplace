@@ -6,6 +6,7 @@ import About from "./about";
 import Register from "./auth/register";
 import RegisterTwofactor from "./auth/register_twofactor";
 import { checkLoggedIn } from "./auth/auth";
+import Config from 'Config';
 
 
 function App(props) {
@@ -13,14 +14,14 @@ function App(props) {
     const [loggedIn, setLoggedIn] = useState(false);
     const [userID, setUserID] = useState(-1);
 
-    function handleRegistrationSuccess(response_data) {
+    function handleRegistrationSuccess() {
         checkLoggedIn(setLoggedIn, setUserID);
         history.pushState("/register_twofactor");
     }
 
     return (
         <div className="app">
-            <BrowserRouter>
+            <BrowserRouter basename={Config.routerBasename}>
                 <Switch>
                     <Route exact path={"/"} render={props => (
                         <Home {... props} loggedIn={loggedIn} />

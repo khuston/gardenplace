@@ -31,7 +31,7 @@ func makeJSONDecoder(request *http.Request) (*json.Decoder, error) {
 
 	contentType := request.Header.Get("Content-Type")
 	if contentType != "" {
-		if strings.ToLower(contentType) != "application/json" {
+		if strings.Split(strings.ToLower(contentType), ";")[0] != "application/json" {
 			msg := "Content-Type header is not application/json"
 			err = &MalformedRequest{Status: http.StatusUnsupportedMediaType, Msg: msg}
 		}

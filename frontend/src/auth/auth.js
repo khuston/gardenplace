@@ -1,7 +1,10 @@
 import axios from "axios";
+import Config from 'Config';
 
-const loggedin_endpoint="https://localhost:9001/registrations";
-const registration_endpoint="https://localhost:9001/registrations";
+const loggedin_endpoint = Config.serverUrl + ":9001/loggedin";
+const registration_endpoint = Config.serverUrl + ":9001/register";
+
+console.log(Config)
 
 export function checkLoggedIn(setLoggedIn, setUserID) {
     axios
@@ -29,12 +32,12 @@ export function registerUser(email, password, password_reentered, handleSuccess,
     axios
         .post(registration_endpoint, payload)
         .then(response => {
-            if (response.data.status === "created") {
-                handleSuccess(error);
+            if (response.status === 201) {
+                handleSuccess();
             }
         })
         .catch(error => {
-            handleError(error);
+            handleError(error.response.data);
         })
 }
 
@@ -48,11 +51,11 @@ export function loginUser(email, password, handleSuccess, handleError, handleReq
 
                 // if two factor required, ask user for it
 
-                handleSuccess(error);
+                handleSuccess();
             }
         })
         .catch(error => {
-            handleError(error);
+            handleError(error.response.data);
         })
 }
 
@@ -66,16 +69,17 @@ export function default_login_payload() {
 
 function make_registration_payload(email, password, password_reentered) {
     return {
-        email: email,
-        password: password,
-        password_reentered: password_reentered
+        Email: email,
+        Password: password,
+        PasswordReentered: password_reentered,
+        SessionID: 0
     }
 }
 
 function make_login_payload(email, password, one_time_password) {
     return {
-        email: email,
-        password: password,
-        one_time_password: one_time_password
+        Email: email,
+        Password: password,
+        OneTimePassword: one_time_password
     }
 }

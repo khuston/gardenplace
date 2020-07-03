@@ -13,8 +13,8 @@ type RegistrationHandler struct {
 	DB UserDB
 }
 
-// HandleRegister fulfills an incoming registration request if valid.
-func (handler RegistrationHandler) HandleRegister(writer http.ResponseWriter, request *http.Request) {
+// ServeHTTP fulfills an incoming registration request if valid.
+func (handler RegistrationHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	payload := RegistrationPayload{}
 
 	err := unmarshal.DecodeJSONBody(request, &payload)
@@ -22,6 +22,8 @@ func (handler RegistrationHandler) HandleRegister(writer http.ResponseWriter, re
 		err = payload.validate()
 		if err == nil {
 			err = registerUser(payload.Email, payload.Password, handler.DB)
+
+			writer.WriteHeader(http.StatusCreated)
 		}
 	}
 
