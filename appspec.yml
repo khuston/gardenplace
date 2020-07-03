@@ -7,7 +7,7 @@ permissions:
   - object: /webapps/gardenplace
     pattern: "**"
     owner: ec2-user
-    mode: 644
+    mode: 777
     type:
       - directory
 hooks:
