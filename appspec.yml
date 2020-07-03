@@ -8,12 +8,16 @@ permissions:
     pattern: "**"
     owner: ec2-user
     mode: 777
+    acls:
+      - u:ec2-user:rw
     type:
       - directory
 hooks:
   ApplicationStop:
     - location: scripts/application_stop.sh
       timeout: 5
+      runas: root
   ApplicationStart:
     - location: scripts/application_start.sh
       timeout: 5
+      runas: root
