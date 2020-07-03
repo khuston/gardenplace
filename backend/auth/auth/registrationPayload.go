@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"fmt"
 	"net/http"
+	"net/mail"
 
 	"github.com/khuston/gardenplace/unmarshal"
 )
@@ -15,11 +15,31 @@ type RegistrationPayload struct {
 	SessionID         int64
 }
 
-func (payload RegistrationPayload) validate() error {
+func (payload *RegistrationPayload) validate() error {
+
+	// Validate e-mail address
+	validatedEmail, err := mail.ParseAddress(payload.Email)
+
+	payload.Email = validatedEmail.Address // todo: check that this actually does something, e.g. removes whitespace
+
+	if err != nil {
+		return &unmarshal.MalformedRequest{Status: http.StatusBadRequest, Msg: "E-mail address is not valid"}
+	}
+
+	// Validate pasword
+	if len(payload.Password) < 1 {
+		return &unmarshal.MalformedRequest{Status: http.StatusBadRequest, Msg: "Blank password is not allowed"}
+	}
+
 	if payload.Password != payload.PasswordReentered {
-		msg := fmt.Sprintf("Re-entered password does not match")
-		return &unmarshal.MalformedRequest{Status: http.StatusBadRequest, Msg: msg}
+		return &unmarshal.MalformedRequest{Status: http.StatusBadRequest, Msg: "Re-entered password does not match"}
 	}
 
 	return nil
+}
+
+func validateEmailAddress(emailAddress string) (string, error) {
+	validatedEmail, err := mail.ParseAddress(emailAddress)
+
+	return validatedEmail.Address, err
 }

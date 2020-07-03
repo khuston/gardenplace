@@ -26,16 +26,31 @@ func InitUserDBConnection(connectionStr string) UserDB {
 }
 
 func (db SQLUserDB) storeEmailAndHash(email string, hash string) error {
-	// Prepared statement prevents SQL injection
-	statement, err := db.DB.Prepare("INSERT INTO users (email, hash) VALUES (?, ?)")
 
-	// We do not query whether email already exists in the users database, because it should
-	// require unique email addresses, returning an error when we execute this statement.
-	_, err = statement.Exec(email, hash)
+	if db.emailIsUsed(email) {
+		return &FailedRequest{Msg: "The e-mail address provided is already in use."}
+	} else {
+		// Prepared statement prevents SQL injection
+		statement, err := db.DB.Prepare("INSERT INTO users (email, hash) VALUES (?, ?)")
 
-	if err != nil {
-		fmt.Println("Error: ", err)
+		_, err = statement.Exec(email, hash)
+
+		if err != nil {
+			fmt.Println("Error: ", err)
+			return &FailedRequest{Msg: err.Error()}
+		}
 	}
 
 	return nil
+}
+
+func (db SQLUserDB) emailIsUsed(email string) bool {
+	// Prepared statement prevents SQL injection
+	statement, _ := db.DB.Prepare("SELECT email from users WHERE email = ?")
+
+	var matchedEmail string
+
+	err := statement.QueryRow(email).Scan(&matchedEmail)
+
+	return (err == nil)
 }

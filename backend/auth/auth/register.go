@@ -23,7 +23,9 @@ func (handler RegistrationHandler) ServeHTTP(writer http.ResponseWriter, request
 		if err == nil {
 			err = registerUser(payload.Email, payload.Password, handler.DB)
 
-			writer.WriteHeader(http.StatusCreated)
+			if err == nil {
+				writer.WriteHeader(http.StatusCreated)
+			}
 		}
 	}
 
@@ -42,8 +44,11 @@ func registerUser(email string, password string, db UserDB) error {
 
 func handleError(err error, writer http.ResponseWriter) {
 	var mr *unmarshal.MalformedRequest
+	var fr *FailedRequest
 	if errors.As(err, &mr) {
 		http.Error(writer, mr.Msg, mr.Status)
+	} else if errors.As(err, &fr) {
+		http.Error(writer, fr.Msg, http.StatusOK)
 	} else {
 		log.Println(err.Error())
 		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
