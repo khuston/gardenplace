@@ -25,7 +25,10 @@ phases:
       - |
         echo "
         {
-          \"UserDBConnectionString\": \""$DB_USERNAME":"$DB_PASSWORD"@tcp("$DB_HOST":"$DB_PORT")/gardenplace\"
+          \"UserDBConnectionString\": \""$DB_USERNAME":"$DB_PASSWORD"@tcp("$DB_HOST":"$DB_PORT")/gardenplace\",
+          \"UseTLS\": true,
+          \"Port\": 9001
+
         }" > config.json
     finally:
       - echo $(ls)

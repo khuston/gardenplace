@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 
 	_ "github.com/go-sql-driver/mysql" // Load MySQL driver anonymously
 
@@ -18,5 +19,11 @@ func main() {
 
 	http.HandleFunc("/register", registrationHandler.HandleRegister)
 
-	http.ListenAndServe(":9001", nil)
+	if configuration.UseTLS {
+		http.ListenAndServeTLS(":"+strconv.FormatInt(configuration.Port, 10),
+			"/etc/letsencrypt/live/gardenplace.showandtell.page/fullchain.pem",
+			"/etc/letsencrypt/live/gardenplace.showandtell.page/privkey.pem", nil)
+	} else {
+		http.ListenAndServe(":"+strconv.FormatInt(configuration.Port, 10), nil)
+	}
 }
