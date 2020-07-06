@@ -1,23 +1,21 @@
 import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import { BrowserRouter, Switch, Route, useHistory } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Home from "./home";
 import About from "./about";
+import Login from "./auth/login";
 import Register from "./auth/register";
 import RegisterTwofactor from "./auth/register_twofactor";
-import { checkLoggedIn } from "./auth/auth";
 import Config from 'Config';
+import GetCookies from "./auth/cookies";
 
 
 function App(props) {
-    const history = useHistory();
     const [loggedIn, setLoggedIn] = useState(false);
-    const [userID, setUserID] = useState(-1);
 
-    function handleRegistrationSuccess() {
-        checkLoggedIn(setLoggedIn, setUserID);
-        history.pushState("/register_twofactor");
-    }
+    const [authToken, setAuthToken] = useState(GetCookies());
+
+    console.log(authToken)
 
     return (
         <div className="app">
@@ -32,11 +30,11 @@ function App(props) {
                     )}
                     />
                     <Route exact path={"/login"} render={props => (
-                        <Login {... props} />
+                        <Login {... props} setLoggedIn={setLoggedIn} setAuthToken={setAuthToken} />
                     )}
                     />
                     <Route exact path={"/register"} render={props => (
-                        <Register {... props} handleRegistrationSuccess={handleRegistrationSuccess} />
+                        <Register {... props} />
                     )}
                     />
                     <Route exact path={"/register_twofactor"} render={props => (

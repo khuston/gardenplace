@@ -1,30 +1,8 @@
 import axios from "axios";
 import Config from 'Config';
 
-const loggedin_endpoint = Config.serverUrl + ":9001/loggedin";
+const login_endpoint = Config.serverUrl + ":9001/login";
 const registration_endpoint = Config.serverUrl + ":9001/register";
-
-console.log(Config)
-
-export function checkLoggedIn(setLoggedIn, setUserID) {
-    axios
-        .get(loggedin_endpoint,
-            { withCredentials: true } // send cookies
-            )
-        .then(response => {
-            if (response.data.logged_in) {
-                setLoggedIn(true);
-                setUserID(response.data.user_id);
-            }
-            else {
-                setLoggedIn(false);
-                setUserID("");
-            }
-        })
-        .catch(error => {
-            console.log("Error while checking login", error);
-        })
-}
 
 export function registerUser(email, password, password_reentered, handleSuccess, handleError) {
     let payload = make_registration_payload(email, password, password_reentered);
@@ -48,17 +26,23 @@ export function loginUser(email, password, handleSuccess, handleError, handleReq
     let payload = make_login_payload(email, password);
 
     axios
-        .post(login_requires_twofactor_endpoint, payload)
-        .then(response => {
-            if (response.data.status === "created") { // TODO: What will the response status be?
-
-                // if two factor required, ask user for it
-
-                handleSuccess();
-            }
-        })
+        .post(login_endpoint, payload, { withCredentials: true })
         .catch(error => {
+            console.log(error)
             handleError(error.response.data);
+        })
+        .then(response => {
+            if (response.status === 200) {
+                if (response.data.LoggedIn === true) {
+                    handleSuccess();
+                }
+                else if (response.data.RequireTwoFactor === true) {
+                    handleRequireTwoFactor()
+                }
+                else {
+                    handleError(response.data)
+                }
+            }
         })
 }
 
@@ -75,7 +59,6 @@ function make_registration_payload(email, password, password_reentered) {
         Email: email,
         Password: password,
         PasswordReentered: password_reentered,
-        SessionID: 0
     }
 }
 

@@ -23,6 +23,7 @@ func CORSHandler(h http.Handler, allowedOrigins []*url.URL) http.HandlerFunc {
 
 			header := w.Header()
 			header.Add("Access-Control-Allow-Origin", origin)
+			header.Add("Access-Control-Allow-Credentials", "true")
 
 			if r.Method == "OPTIONS" {
 				// Handle preflight requests by returning expected headers to browser.

@@ -1,13 +1,25 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { default_login_payload, loginUser } from "./auth";
+import { useHistory } from "react-router-dom";
+import GetCookies from "./cookies";
 
 function Login(props) {
+    const history = useHistory();
+
     const [state, setState] = useState(
         default_login_payload()
     )
 
     const [loginStatus, setLoginStatus] = useState("");
+
+    function handleLoginSuccess() {
+        props.setLoggedIn(true);
+
+        props.setAuthToken(GetCookies());
+
+        history.push("/");
+    }
 
     function handleLoginError(event) {
         setLoginStatus("FAILED");
@@ -27,9 +39,9 @@ function Login(props) {
 
         setLoginStatus("IN PROGRESS");
 
-        const { email, password, password_reentered } = state;
+        const { email, password } = state;
 
-        loginUser(email, password, password_reentered, props.handleLoginSuccess, handleLoginError);
+        loginUser(email, password, handleLoginSuccess, handleLoginError);
 
         return false; // Prevent default submit behavior since we override it
     }
@@ -38,12 +50,12 @@ function Login(props) {
         <div>
             <h1>Gardenplace</h1>
             <Link to="/">Home</Link>
-            <LoginStatus LoginStatus={LoginStatus} />
             <form onSubmit={handleSubmit}>
                 <input type="email" name="email" placeholder="E-mail address" value={state.email} onChange={handleChange} required />
                 <input type="password" name="password" placeholder="Password" value={state.password} onChange={handleChange} required />
                 <button type="submit">Login</button>
             </form>
+            <LoginStatus loginStatus={loginStatus} />
         </div>
     )
 }

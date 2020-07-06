@@ -1,13 +1,21 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { default_registration_payload, registerUser } from "./auth";
+import { useHistory } from "react-router-dom";
 
 function Register(props) {
+    const history = useHistory();
+
     const [state, setState] = useState(
         default_registration_payload()
     )
 
     const [registrationStatus, setRegistrationStatus] = useState("");
+
+    function handleRegistrationSuccess() {
+        checkLoggedIn(setLoggedIn, setUserID);
+        history.push("/register_twofactor");
+    }
 
     function handleRegistrationError(response_data) {
         setRegistrationStatus(response_data);
@@ -29,7 +37,7 @@ function Register(props) {
 
         const { email, password, password_reentered } = state;
 
-        registerUser(email, password, password_reentered, props.handleRegistrationSuccess, handleRegistrationError);
+        registerUser(email, password, password_reentered, handleRegistrationSuccess, handleRegistrationError);
 
         return false; // Prevent default submit behavior since we override it
     }
@@ -38,13 +46,13 @@ function Register(props) {
         <div>
             <h1>Gardenplace</h1>
             <Link to="/">Home</Link>
-            <RegistrationStatus registrationStatus={registrationStatus} />
             <form onSubmit={handleSubmit}>
                 <input type="email" name="email" placeholder="E-mail address" value={state.email} onChange={handleChange} required />
                 <input type="password" name="password" placeholder="Password" value={state.password} onChange={handleChange} required />
                 <input type="password" name="password_reentered" placeholder="Re-enter Password" value={state.password_reentered} onChange={handleChange} required />
                 <button type="submit">Register</button>
             </form>
+            <RegistrationStatus registrationStatus={registrationStatus} />
         </div>
     )
 }

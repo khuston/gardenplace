@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"math/rand"
 	"net/http"
 	"strconv"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql" // Load MySQL driver anonymously
 
@@ -14,15 +16,27 @@ import (
 
 func main() {
 	// 1. Configure Dependencies
+	rand.Seed(time.Now().UTC().UnixNano())
+
 	configuration := config.LoadConfiguration()
 
 	db := auth.InitUserDBConnection(configuration.UserDBConnectionString)
 
+	loginHandler := auth.LoginHandler{DB: db}
+
+	// TODO:     verifyHandler := auth.VerifyHandler{DB: db}
+
 	registrationHandler := auth.RegistrationHandler{DB: db}
+
+	serverLoginWithCORS := crossorigin.CORSHandler(loginHandler, configuration.AllowedOriginURLs())
 
 	serveRegistrationWithCORS := crossorigin.CORSHandler(registrationHandler, configuration.AllowedOriginURLs())
 
 	http.HandleFunc("/register", serveRegistrationWithCORS)
+
+	http.HandleFunc("/login", serverLoginWithCORS)
+
+	// TODO:   http.HandleFunc("/verify/", verifyHandler)
 
 	// 2. Write Status
 	reportStatusAfterInitialize(configuration)

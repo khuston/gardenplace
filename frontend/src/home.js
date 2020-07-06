@@ -46,8 +46,14 @@ function Navbar(props) {
     )
 }
 
-let FavoriteGardens = Navbar;
-let FavoritePlants = Navbar;
-let ConnectionsActivity = Navbar;
+function BlankElement(props) {
+    return (
+        <div></div>
+    )
+}
+
+let FavoriteGardens = BlankElement;
+let FavoritePlants = BlankElement;
+let ConnectionsActivity = BlankElement;
 
 export default Home;
