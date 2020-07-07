@@ -18,11 +18,15 @@ func main() {
 	// 1. Configure Dependencies
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	configuration := config.LoadConfiguration()
+	configuration, err := config.LoadConfiguration()
+
+	if err != nil {
+		return
+	}
 
 	db := auth.InitUserDBConnection(configuration.UserDBConnectionString)
 
-	loginHandler := auth.LoginHandler{DB: db}
+	loginHandler := auth.LoginHandler{DB: db, SecureCookies: configuration.UseTLS}
 
 	// TODO:     verifyHandler := auth.VerifyHandler{DB: db}
 
@@ -42,8 +46,6 @@ func main() {
 	reportStatusAfterInitialize(configuration)
 
 	// 3. Start Server
-	var err error
-
 	port := strconv.FormatInt(configuration.Port, 10)
 
 	if configuration.UseTLS {

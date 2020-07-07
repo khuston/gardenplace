@@ -12,29 +12,30 @@ type Configuration struct {
 	UseTLS                 bool
 	Port                   int64
 	AllowedOrigins         []string
-	SecureCookies          bool
 }
 
-func LoadConfiguration() Configuration {
+func LoadConfiguration() (Configuration, error) {
 	file, err := findConfigurationFile()
 
 	defer file.Close()
 
 	configuration := Configuration{}
 
-	if err == nil {
-		decoder := json.NewDecoder(file)
-
-		decodeErr := decoder.Decode(&configuration)
-
-		if decodeErr != nil {
-			fmt.Println(decodeErr)
-		}
-	} else {
-		fmt.Println(err)
+	if err != nil {
+		fmt.Println("Error loading configuration: ", err)
+		return configuration, err
 	}
 
-	return configuration
+	decoder := json.NewDecoder(file)
+
+	decodeErr := decoder.Decode(&configuration)
+
+	if decodeErr != nil {
+		fmt.Println("Error loading configuration: ", decodeErr)
+		return configuration, decodeErr
+	}
+
+	return configuration, nil
 }
 
 func findConfigurationFile() (*os.File, error) {

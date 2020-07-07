@@ -13,7 +13,7 @@ import (
 
 type LoginHandler struct {
 	DB            UserDB
-	secureCookies bool
+	SecureCookies bool
 }
 
 type loginResponseData struct {
@@ -43,15 +43,15 @@ func (handler LoginHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 
 	cookiePrefix := ""
 
-	if handler.secureCookies {
+	if handler.SecureCookies {
 		cookiePrefix = "__Secure-"
 	}
 
 	addCookie(writer, cookiePrefix+"Email", payload.Email,
-		handler.DB.getAuthDuration(), handler.secureCookies)
+		handler.DB.getAuthDuration(), handler.SecureCookies)
 
 	addCookie(writer, cookiePrefix+"Token", responseData.AuthToken,
-		handler.DB.getAuthDuration(), handler.secureCookies)
+		handler.DB.getAuthDuration(), handler.SecureCookies)
 
 	writer.WriteHeader(http.StatusOK)
 
@@ -93,12 +93,12 @@ func loginUser(email string, password string, db UserDB) (loginResponseData, err
 	return responseData, nil
 }
 
-func addCookie(writer http.ResponseWriter, name string, value string, duration time.Duration, secureCookies bool) {
+func addCookie(writer http.ResponseWriter, name string, value string, duration time.Duration, SecureCookies bool) {
 	cookie := http.Cookie{
 		Name:    name,
 		Value:   value,
 		Expires: time.Now().Add(duration),
-		Secure:  secureCookies,
+		Secure:  SecureCookies,
 		Path:    "/",
 	}
 	http.SetCookie(writer, &cookie)

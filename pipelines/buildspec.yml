@@ -28,8 +28,7 @@ phases:
           \"UserDBConnectionString\": \""$DB_USERNAME":"$DB_PASSWORD"@tcp("$DB_HOST":"$DB_PORT")/gardenplace\",
           \"UseTLS\": true,
           \"Port\": 9001,
-          \"AllowedOrigins\": [\"https://www.showandtell.page\"],
-          \"SecureCookies\": true
+          \"AllowedOrigins\": [\"https://www.showandtell.page\"]
         }" > config.json
     finally:
       - echo $(ls)

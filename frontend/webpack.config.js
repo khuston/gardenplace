@@ -37,7 +37,7 @@ module.exports = env => {
                 serverUrl: "https://gardenplace.showandtell.page",
                 routerBasename: "/gardenplace"
             } : {
-                serverUrl: "http://localhost",
+                serverUrl: "http://127.0.0.1",
                 routerBasename: "/"
             })
         },
