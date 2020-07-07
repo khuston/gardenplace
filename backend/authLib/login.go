@@ -78,7 +78,11 @@ func loginUser(email string, password string, ip net.IP, userAgent string, db Us
 	token := make([]byte, 16)
 	rand.Read(token)
 
-	db.storeSessionToken(email, token, ip, userAgent)
+	err = db.storeSessionToken(email, token, ip, userAgent)
+
+	if err != nil {
+		return nil, responseData, err
+	}
 
 	responseData.LoggedIn = true
 

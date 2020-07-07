@@ -1,2 +1,2 @@
 cd /webapps/gardenplace/backend/authService
-nohup ./gardenplace & echo $! > auth_pidfile
+nohup ./authService & echo $! > auth_pidfile
