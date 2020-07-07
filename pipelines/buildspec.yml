@@ -35,7 +35,7 @@ phases:
       - cd
 artifacts:
   files:
-    - backend/authService/gardenplace
+    - backend/authService/authService
     - backend/authService/config.json
     - appspec.yml
     - scripts/*
