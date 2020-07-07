@@ -41,10 +41,10 @@ func (handler LoginHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 	}
 
 	addCookie(writer, "__Secure-Email", payload.Email,
-		handler.DB.getAuthDuration())
+		handler.DB.getAuthDuration(), request.Header.Get("Origin"))
 
 	addCookie(writer, "__Secure-Token", responseData.AuthToken,
-		handler.DB.getAuthDuration())
+		handler.DB.getAuthDuration(), request.Header.Get("Origin"))
 
 	writer.WriteHeader(http.StatusOK)
 
@@ -86,13 +86,14 @@ func loginUser(email string, password string, db UserDB) (loginResponseData, err
 	return responseData, nil
 }
 
-func addCookie(writer http.ResponseWriter, name string, value string, duration time.Duration) {
+func addCookie(writer http.ResponseWriter, name string, value string, duration time.Duration, domain string) {
 	cookie := http.Cookie{
 		Name:    name,
 		Value:   value,
 		Expires: time.Now().Add(duration),
 		Secure:  true,
 		Path:    "/",
+		Domain:  domain,
 	}
 	http.SetCookie(writer, &cookie)
 }
