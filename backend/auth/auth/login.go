@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"net/http"
-	"net/url"
 	"time"
 
 	"github.com/khuston/gardenplace/unmarshal"
@@ -13,7 +12,8 @@ import (
 )
 
 type LoginHandler struct {
-	DB UserDB
+	DB            UserDB
+	secureCookies bool
 }
 
 type loginResponseData struct {
@@ -41,14 +41,17 @@ func (handler LoginHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	originURL, _ := url.ParseRequestURI(request.Header.Get("Origin"))
-	originHostname := originURL.Hostname()
+	cookiePrefix := ""
 
-	addCookie(writer, "__Secure-Email", payload.Email,
-		handler.DB.getAuthDuration(), originHostname)
+	if handler.secureCookies {
+		cookiePrefix = "__Secure-"
+	}
 
-	addCookie(writer, "__Secure-Token", responseData.AuthToken,
-		handler.DB.getAuthDuration(), originHostname)
+	addCookie(writer, cookiePrefix+"Email", payload.Email,
+		handler.DB.getAuthDuration(), handler.secureCookies)
+
+	addCookie(writer, cookiePrefix+"Token", responseData.AuthToken,
+		handler.DB.getAuthDuration(), handler.secureCookies)
 
 	writer.WriteHeader(http.StatusOK)
 
@@ -90,14 +93,13 @@ func loginUser(email string, password string, db UserDB) (loginResponseData, err
 	return responseData, nil
 }
 
-func addCookie(writer http.ResponseWriter, name string, value string, duration time.Duration, domain string) {
+func addCookie(writer http.ResponseWriter, name string, value string, duration time.Duration, secureCookies bool) {
 	cookie := http.Cookie{
 		Name:    name,
 		Value:   value,
 		Expires: time.Now().Add(duration),
-		Secure:  true,
+		Secure:  secureCookies,
 		Path:    "/",
-		Domain:  domain,
 	}
 	http.SetCookie(writer, &cookie)
 }

@@ -12,6 +12,7 @@ type Configuration struct {
 	UseTLS                 bool
 	Port                   int64
 	AllowedOrigins         []string
+	SecureCookies          bool
 }
 
 func LoadConfiguration() Configuration {

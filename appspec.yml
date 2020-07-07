@@ -3,6 +3,8 @@ os: linux
 files:
   - source: /
     destination: /webapps/gardenplace
+  - source: /backend/auth/config.json
+    destination: /etc/gardenplace/backend/auth
 permissions:
   - object: /webapps/gardenplace
     pattern: "**"
@@ -12,6 +14,13 @@ permissions:
       - u:ec2-user:rw
     type:
       - directory
+  - object: /etc/gardenplace/backend/auth/config.json
+    owner: ec2-user
+    mode: 777
+    acls:
+      - u:ec2-user:rw
+    type:
+      - file
 hooks:
   ApplicationStop:
     - location: scripts/application_stop.sh

@@ -25,7 +25,7 @@ func InitUserDBConnection(connectionStr string) UserDB {
 		fmt.Println("Critical error: ", err)
 	}
 
-	userDB := SQLUserDB{DB: db, authDuration: 300000}
+	userDB := SQLUserDB{DB: db, authDuration: time.Hour * 1.0}
 
 	return userDB
 }
