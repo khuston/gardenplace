@@ -9,48 +9,41 @@ import (
 
 	_ "github.com/go-sql-driver/mysql" // Load MySQL driver anonymously
 
-	"github.com/khuston/gardenplace/auth"
-	"github.com/khuston/gardenplace/config"
-	"github.com/khuston/gardenplace/crossorigin"
+	"github.com/khuston/gardenplace/authLib"
+	"github.com/khuston/gardenplace/comms"
 )
 
 func main() {
 	// 1. Configure Dependencies
 	rand.Seed(time.Now().UTC().UnixNano())
 
-	configuration, err := config.LoadConfiguration()
+	configuration, err := LoadConfiguration()
 
 	if err != nil {
 		return
 	}
 
-	db := auth.InitUserDBConnection(configuration.UserDBConnectionString)
+	db := authLib.InitUserDBConnection(configuration.UserDBConnectionString)
 
-	loginHandler := auth.LoginHandler{DB: db, SecureCookies: configuration.UseTLS}
+	loginHandler := authLib.LoginHandler{DB: db, SecureCookies: configuration.UseTLS}
 
-	logoutHandler := auth.LogoutHandler{DB: db, SecureCookies: configuration.UseTLS}
-
-	apiHandler := api.APIHandler{DB: db, SecureCookies: configuration.UseTLS}
+	logoutHandler := authLib.LogoutHandler{DB: db, SecureCookies: configuration.UseTLS}
 
 	// TODO:     verifyHandler := auth.VerifyHandler{DB: db}
 
-	registrationHandler := auth.RegistrationHandler{DB: db}
+	registrationHandler := authLib.RegistrationHandler{DB: db}
 
-	serveLoginWithCORS := crossorigin.CORSHandler(loginHandler, configuration.AllowedOriginURLs())
+	serveLoginWithCORS := comms.CORSHandler(loginHandler, configuration.AllowedOriginURLs())
 
-	serveLogoutWithCORS := crossorigin.CORSHandler(logoutHandler, configuration.AllowedOriginURLs())
+	serveLogoutWithCORS := comms.CORSHandler(logoutHandler, configuration.AllowedOriginURLs())
 
-	serveAPIWithCORS := crossorigin.CORSHandler(apiHandler, configuration.AllowedOriginURLs())
-
-	serveRegistrationWithCORS := crossorigin.CORSHandler(registrationHandler, configuration.AllowedOriginURLs())
+	serveRegistrationWithCORS := comms.CORSHandler(registrationHandler, configuration.AllowedOriginURLs())
 
 	http.HandleFunc("/register", serveRegistrationWithCORS)
 
 	http.HandleFunc("/login", serveLoginWithCORS)
 
 	http.HandleFunc("/logout", serveLogoutWithCORS)
-
-	http.HandleFunc("/api", serveAPIWithCORS)
 
 	// TODO:   http.HandleFunc("/verify/", verifyHandler)
 
@@ -73,7 +66,7 @@ func main() {
 	}
 }
 
-func reportStatusAfterInitialize(configuration config.Configuration) {
+func reportStatusAfterInitialize(configuration Configuration) {
 	port := strconv.FormatInt(configuration.Port, 10)
 
 	logMessage := "Will listen on port " + port

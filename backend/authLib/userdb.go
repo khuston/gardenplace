@@ -1,4 +1,4 @@
-package auth
+package authLib
 
 import (
 	"database/sql"

@@ -1,4 +1,4 @@
-package config
+package main
 
 import (
 	"encoding/json"
@@ -40,7 +40,7 @@ func LoadConfiguration() (Configuration, error) {
 
 func findConfigurationFile() (*os.File, error) {
 
-	file, err := os.Open("/etc/gardenplace/backend/auth/config.json")
+	file, err := os.Open("/etc/gardenplace/backend/authService/config.json")
 
 	if err != nil {
 		file, err = os.Open("config.json")

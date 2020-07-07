@@ -1,9 +1,9 @@
-package auth
+package authLib
 
 import (
 	"net/http"
 
-	"github.com/khuston/gardenplace/unmarshal"
+	"github.com/khuston/gardenplace/comms"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -15,7 +15,7 @@ type RegistrationHandler struct {
 func (handler RegistrationHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	payload := RegistrationPayload{}
 
-	err := unmarshal.DecodeJSONBody(request, &payload)
+	err := comms.DecodeJSONBody(request, &payload)
 	if err == nil {
 		err = payload.validate()
 		if err == nil {

@@ -1,4 +1,4 @@
-package crossorigin
+package comms
 
 import (
 	"net/http"

@@ -1,4 +1,4 @@
-package auth
+package authLib
 
 import (
 	"crypto/rand"
@@ -7,7 +7,7 @@ import (
 	"net"
 	"net/http"
 
-	"github.com/khuston/gardenplace/unmarshal"
+	"github.com/khuston/gardenplace/comms"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -30,7 +30,7 @@ func (handler LoginHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 	ip := net.ParseIP(request.Header.Get("X-Forwarded-For"))
 	userAgent := request.Header.Get("User-Agent")
 
-	err := unmarshal.DecodeJSONBody(request, &payload)
+	err := comms.DecodeJSONBody(request, &payload)
 
 	if err != nil {
 		handleError(err, writer)
@@ -44,7 +44,7 @@ func (handler LoginHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	cookies := Cookies{Email: payload.Email, Token: token}
+	cookies := comms.Cookies{Email: payload.Email, Token: token}
 
 	cookies.Write(writer, handler.DB.getAuthDuration(), handler.SecureCookies)
 

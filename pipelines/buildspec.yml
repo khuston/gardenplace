@@ -16,7 +16,7 @@ phases:
       golang: latest
   build:
     commands:
-      - cd backend/auth
+      - cd backend/authService
       - go build
     finally:
       - echo $(ls)
@@ -35,7 +35,7 @@ phases:
       - cd
 artifacts:
   files:
-    - backend/auth/gardenplace
-    - backend/auth/config.json
+    - backend/authService/gardenplace
+    - backend/authService/config.json
     - appspec.yml
     - scripts/*

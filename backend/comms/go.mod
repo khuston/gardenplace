@@ -1,4 +1,4 @@
-module github.com/khuston/gardenplace
+module github.com/khuston/gardenplace/comms
 
 go 1.14
 

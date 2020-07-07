@@ -6,6 +6,7 @@ import About from "./about";
 import Login from "./auth/login";
 import Register from "./auth/register";
 import RegisterTwofactor from "./auth/register_twofactor";
+import { checkLoggedIn } from "./auth/auth"
 import Config from 'Config';
 
 
@@ -26,7 +27,7 @@ function App(props) {
                     )}
                     />
                     <Route exact path={"/login"} render={props => (
-                        <Login {... props} setLoggedIn={setLoggedIn} setAuthToken={setAuthToken} />
+                        <Login {... props} setLoggedIn={setLoggedIn} />
                     )}
                     />
                     <Route exact path={"/register"} render={props => (

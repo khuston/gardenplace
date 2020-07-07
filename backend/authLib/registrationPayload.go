@@ -1,10 +1,10 @@
-package auth
+package authLib
 
 import (
 	"net/http"
 	"net/mail"
 
-	"github.com/khuston/gardenplace/unmarshal"
+	"github.com/khuston/gardenplace/comms"
 )
 
 // RegistrationPayload holds data for registering a new user
@@ -23,16 +23,16 @@ func (payload *RegistrationPayload) validate() error {
 	payload.Email = validatedEmail.Address // todo: check that this actually does something, e.g. removes whitespace
 
 	if err != nil {
-		return &unmarshal.MalformedRequest{Status: http.StatusBadRequest, Msg: "E-mail address is not valid"}
+		return &comms.MalformedRequest{Status: http.StatusBadRequest, Msg: "E-mail address is not valid"}
 	}
 
 	// Validate pasword
 	if len(payload.Password) < 1 {
-		return &unmarshal.MalformedRequest{Status: http.StatusBadRequest, Msg: "Blank password is not allowed"}
+		return &comms.MalformedRequest{Status: http.StatusBadRequest, Msg: "Blank password is not allowed"}
 	}
 
 	if payload.Password != payload.PasswordReentered {
-		return &unmarshal.MalformedRequest{Status: http.StatusBadRequest, Msg: "Re-entered password does not match"}
+		return &comms.MalformedRequest{Status: http.StatusBadRequest, Msg: "Re-entered password does not match"}
 	}
 
 	return nil

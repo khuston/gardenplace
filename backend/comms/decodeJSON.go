@@ -1,4 +1,4 @@
-package unmarshal
+package comms
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 
 func DecodeJSONBody(request *http.Request, payload interface{}) error {
 
-	// 1. Create and configure decoder which can unmarshall JSON in HTTP request body to payload struct.
+	// 1. Create and configure decoder which can unmarshal JSON in HTTP request body to payload struct.
 	decoder, err := makeJSONDecoder(request)
 
 	if err == nil {

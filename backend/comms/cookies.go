@@ -1,4 +1,4 @@
-package auth
+package comms
 
 import (
 	"encoding/hex"

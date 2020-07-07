@@ -1,7 +1,9 @@
-package auth
+package authLib
 
 import (
 	"net/http"
+
+	"github.com/khuston/gardenplace/comms"
 )
 
 type LogoutHandler struct {
@@ -16,7 +18,7 @@ type logoutResponseData struct {
 // ServeHTTP fulfills an incoming login request if valid.
 func (handler LogoutHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 
-	cookies, err := LoadCookies(request, handler.SecureCookies)
+	cookies, err := comms.LoadCookies(request, handler.SecureCookies)
 
 	if err != nil {
 		handleError(err, writer)

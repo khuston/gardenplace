@@ -3,8 +3,8 @@ os: linux
 files:
   - source: /
     destination: /webapps/gardenplace
-  - source: /backend/auth/config.json
-    destination: /etc/gardenplace/backend/auth
+  - source: /backend/authService/config.json
+    destination: /etc/gardenplace/backend/authService
 permissions:
   - object: /webapps/gardenplace
     pattern: "**"
@@ -14,7 +14,7 @@ permissions:
       - u:ec2-user:rw
     type:
       - directory
-  - object: /etc/gardenplace/backend/auth/config.json
+  - object: /etc/gardenplace/backend/authService/config.json
     owner: ec2-user
     mode: 777
     acls:

@@ -1,11 +1,11 @@
-package auth
+package authLib
 
 import (
 	"errors"
 	"log"
 	"net/http"
 
-	"github.com/khuston/gardenplace/unmarshal"
+	"github.com/khuston/gardenplace/comms"
 )
 
 type FailedRequest struct {
@@ -17,7 +17,7 @@ func (mr *FailedRequest) Error() string {
 }
 
 func handleError(err error, writer http.ResponseWriter) {
-	var mr *unmarshal.MalformedRequest
+	var mr *comms.MalformedRequest
 	var fr *FailedRequest
 	if errors.As(err, &mr) {
 		http.Error(writer, mr.Msg, mr.Status)

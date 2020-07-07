@@ -65,8 +65,14 @@ export function checkLoggedIn() {
         .catch(error => {
             return false
         })
-        
-    return true
+        .then(response => {
+            if (response.status === 200) {
+                return true
+            }
+            else {
+                return false
+            }
+        })
 }
 
 export function default_registration_payload() {
