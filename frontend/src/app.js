@@ -7,22 +7,18 @@ import Login from "./auth/login";
 import Register from "./auth/register";
 import RegisterTwofactor from "./auth/register_twofactor";
 import Config from 'Config';
-import GetCookies from "./auth/cookies";
 
 
 function App(props) {
-    const [loggedIn, setLoggedIn] = useState(false);
 
-    const [authToken, setAuthToken] = useState(GetCookies());
-
-    console.log(authToken)
+    const [loggedIn, setLoggedIn] = useState(checkLoggedIn());
 
     return (
         <div className="app">
             <BrowserRouter basename={Config.routerBasename}>
                 <Switch>
                     <Route exact path={"/"} render={props => (
-                        <Home {... props} loggedIn={loggedIn} />
+                        <Home {... props} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
                     )}
                     />
                     <Route exact path={"/about"} render={props => (

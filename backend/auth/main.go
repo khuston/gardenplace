@@ -28,17 +28,29 @@ func main() {
 
 	loginHandler := auth.LoginHandler{DB: db, SecureCookies: configuration.UseTLS}
 
+	logoutHandler := auth.LogoutHandler{DB: db, SecureCookies: configuration.UseTLS}
+
+	apiHandler := api.APIHandler{DB: db, SecureCookies: configuration.UseTLS}
+
 	// TODO:     verifyHandler := auth.VerifyHandler{DB: db}
 
 	registrationHandler := auth.RegistrationHandler{DB: db}
 
-	serverLoginWithCORS := crossorigin.CORSHandler(loginHandler, configuration.AllowedOriginURLs())
+	serveLoginWithCORS := crossorigin.CORSHandler(loginHandler, configuration.AllowedOriginURLs())
+
+	serveLogoutWithCORS := crossorigin.CORSHandler(logoutHandler, configuration.AllowedOriginURLs())
+
+	serveAPIWithCORS := crossorigin.CORSHandler(apiHandler, configuration.AllowedOriginURLs())
 
 	serveRegistrationWithCORS := crossorigin.CORSHandler(registrationHandler, configuration.AllowedOriginURLs())
 
 	http.HandleFunc("/register", serveRegistrationWithCORS)
 
-	http.HandleFunc("/login", serverLoginWithCORS)
+	http.HandleFunc("/login", serveLoginWithCORS)
+
+	http.HandleFunc("/logout", serveLogoutWithCORS)
+
+	http.HandleFunc("/api", serveAPIWithCORS)
 
 	// TODO:   http.HandleFunc("/verify/", verifyHandler)
 

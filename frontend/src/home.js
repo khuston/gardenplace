@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { logoutUser } from "./auth/auth";
 
 function Home(props) {
     if (props.loggedIn) {
@@ -14,7 +15,7 @@ function LoggedInHome(props) {
     return (
         <div>
             <h1>Gardenplace</h1>
-            <Navbar loggedIn={props.loggedIn}></Navbar>
+            <Navbar setLoggedIn={props.setLoggedIn}></Navbar>
             Favorite Gardens
             <FavoriteGardens></FavoriteGardens>
             Favorite Plants
@@ -36,12 +37,17 @@ function LoggedOutHome(props) {
 }
 
 function Navbar(props) {
+
+    function onClickLogout(event) {
+        logoutUser(() => { props.setLoggedIn(false) })
+    }
+
     return (
         <div>
-            <Link to="/about">Connect</Link>
+            <Link to="/connect">Connect</Link>
             <Link to="/about">About</Link>
-            <Link to="/about">Settings</Link>
-            <Link to="/about">Logout</Link>
+            <Link to="/account">Account</Link>
+            <a href="#" onClick={onClickLogout}>Logout</a>
         </div>
     )
 }

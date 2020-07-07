@@ -2,7 +2,9 @@ import axios from "axios";
 import Config from 'Config';
 
 const login_endpoint = Config.serverUrl + ":9001/login";
+const logout_endpoint = Config.serverUrl + ":9001/logout";
 const registration_endpoint = Config.serverUrl + ":9001/register";
+const api_endpoint = Config.serverUrl + ":9001/api"
 
 export function registerUser(email, password, password_reentered, handleSuccess, handleError) {
     let payload = make_registration_payload(email, password, password_reentered);
@@ -44,6 +46,27 @@ export function loginUser(email, password, handleSuccess, handleError, handleReq
                 }
             }
         })
+}
+
+export function logoutUser(handleSuccess) {
+    axios
+        .post(logout_endpoint, {}, { withCredentials: true })
+        .catch(error => {
+            console.log(error)
+        })
+        .then(response => {
+            handleSuccess()
+        })
+}
+
+export function checkLoggedIn() {
+    axios
+        .post(api_endpoint, {}, { withCredentials: true })
+        .catch(error => {
+            return false
+        })
+        
+    return true
 }
 
 export function default_registration_payload() {

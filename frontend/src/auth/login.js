@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { default_login_payload, loginUser } from "./auth";
 import { useHistory } from "react-router-dom";
-import GetCookies from "./cookies";
 
 function Login(props) {
     const history = useHistory();
@@ -15,8 +14,6 @@ function Login(props) {
 
     function handleLoginSuccess() {
         props.setLoggedIn(true);
-
-        props.setAuthToken(GetCookies());
 
         history.push("/");
     }
