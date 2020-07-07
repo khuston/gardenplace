@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/khuston/gardenplace/unmarshal"
@@ -40,11 +41,14 @@ func (handler LoginHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 		return
 	}
 
+	originURL, _ := url.ParseRequestURI(request.Header.Get("Origin"))
+	originHostname := originURL.Hostname()
+
 	addCookie(writer, "__Secure-Email", payload.Email,
-		handler.DB.getAuthDuration(), request.Header.Get("Origin"))
+		handler.DB.getAuthDuration(), originHostname)
 
 	addCookie(writer, "__Secure-Token", responseData.AuthToken,
-		handler.DB.getAuthDuration(), request.Header.Get("Origin"))
+		handler.DB.getAuthDuration(), originHostname)
 
 	writer.WriteHeader(http.StatusOK)
 
