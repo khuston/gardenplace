@@ -16,12 +16,10 @@ export function registerUser(email, password, password_reentered, handleSuccess,
                 handleSuccess();
             }
             else {
-                handleError(response.data)
+                handleError({response: response})
             }
         })
-        .catch(error => {
-            handleError(error.response.data);
-        })
+        .catch(error => handleError(error))
 }
 
 export function loginUser(email, password, handleSuccess, handleError, handleRequireTwoFactor) {
@@ -30,21 +28,15 @@ export function loginUser(email, password, handleSuccess, handleError, handleReq
     var payload = make_getnonce_payload(email);
     axios
         .post(login_endpoint, payload, { withCredentials: true })
-        .catch(error => {
-            console.log(error)
-            handleError(error.response.data);
-        })
+        .catch(error => handleError(error))
         .then(() => {
             // 2. Submit Login Credentials with Nonce Cookie
             payload = make_login_payload(email, password);
             axios
                 .post(login_endpoint, payload, { withCredentials: true })
-                .catch(error => {
-                    console.log(error)
-                    handleError(error.response.data);
-                })
+                .catch(error => handleError(error))
                 .then(response => {
-                    if (response.status === 200) {
+                    if (response && response.status === 200) {
                         if (response.data.LoggedIn === true) {
                             handleSuccess();
                         }
@@ -52,7 +44,7 @@ export function loginUser(email, password, handleSuccess, handleError, handleReq
                             handleRequireTwoFactor()
                         }
                         else {
-                            handleError(response.data)
+                            handleError({response: response})
                         }
                     }
                 })
@@ -86,33 +78,25 @@ export function checkLoggedIn() {
         })
 }
 
-export function default_registration_payload() {
-    return make_registration_payload("", "", "")
-}
-
-export function default_login_payload() {
-    return make_login_payload("", "", "")
-}
-
 function make_registration_payload(email, password, password_reentered) {
     return {
-        Email: email,
-        Password: password,
-        PasswordReentered: password_reentered,
+        email: email,
+        password: password,
+        passwordReentered: password_reentered,
     }
 }
 
 function make_login_payload(email, password, one_time_password) {
     return {
-        Email: email,
-        Password: password,
-        OneTimePassword: one_time_password
+        email: email,
+        password: password,
+        oneTimePassword: one_time_password
     }
 }
 
 function make_getnonce_payload(email) {
     return {
-        Email: email,
-        GetNonce: true
+        email: email,
+        getNonce: true
     }
 }

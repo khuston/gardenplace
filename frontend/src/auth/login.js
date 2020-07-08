@@ -1,14 +1,83 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { default_login_payload, loginUser } from "./auth";
+import { loginUser, registerUser } from "./auth";
 import { useHistory } from "react-router-dom";
+import Config from 'Config';
+import styles from '../css/gardenplace.css'
 
-function Login(props) {
-    const history = useHistory();
+function Welcome(props) {
+    const [registerPopup, setRegisterPopup] = useState(false)
 
-    const [state, setState] = useState(
-        default_login_payload()
+    const [fields, setFields] = useState({
+        email: "",
+        password: "",
+        passwordReentered: "",
+        oneTimePassword: ""
+    })
+
+    const [disabled, setDisabled] = useState(false)
+
+    function handleFieldChange(event) {
+        setFields({
+            ...fields,
+            [event.target.name]: event.target.value
+        })
+    }
+
+    return (
+        <div>
+            <h1>Gardenplace</h1>
+            <div className="home-box">
+                <div className="home-image-pane">
+                    <img className="splash-image" src={Config.publicStaticDir + "/splash.jpg"}></img>
+                </div>
+                <div className="home-user-pane">
+                    <LoginBox isPopped={!registerPopup} popup={() => setRegisterPopup(false)} fields={fields} onChange={handleFieldChange} 
+                        disabled={disabled} setDisabled={setDisabled} setLoggedIn={props.setLoggedIn} />
+                    <RegisterBox isPopped={registerPopup} popup={() => setRegisterPopup(true)} fields={fields} onChange={handleFieldChange}
+                        disabled={disabled} setDisabled={setDisabled} />
+                </div>
+            </div>
+        </div>
     )
+}
+
+
+function LoginBox(props) {
+    if (props.isPopped) {
+        return <BigLoginBox {...props} />
+    }
+    else {
+        return <LittleLoginBox {...props} />
+    }
+}
+
+function RegisterBox(props) {
+    if (props.isPopped) {
+        return <FullRegisterBox {...props} />
+    }
+    else {
+        return <LittleRegisterBox {...props} />
+    }
+}
+
+function LittleLoginBox(props) {
+    return (
+        <div className="login-box">
+            <button onClick={props.popup} disabled={props.disabled}>Log In</button>
+        </div>
+    )
+}
+
+function LittleRegisterBox(props) {
+    return (
+        <div className="login-box">
+            <button onClick={props.popup} disabled={props.disabled}>Sign Up</button>
+        </div>
+    )
+}
+
+function BigLoginBox(props) {
+    const history = useHistory();
 
     const [loginStatus, setLoginStatus] = useState("");
 
@@ -18,25 +87,27 @@ function Login(props) {
         history.push("/");
     }
 
-    function handleLoginError(event) {
-        setLoginStatus("FAILED");
-    }
+    function handleLoginError(error) {
+        if (error.response) {
+            setLoginStatus(error.response.data);
+        }
+        else if (error.request) {
+            setLoginStatus("Server Unresponsive. Try again later.")
+        }
+        else {
+            console.log(error)
+        }
 
-    function handleChange(event) {
-        event.persist();
-        setState(prevState => {
-            let newState = Object.assign({}, prevState);
-            newState[event.target.name] = event.target.value;
-            return newState;
-        })
+        props.setDisabled(false)
     }
 
     function handleSubmit(event) {
         event.preventDefault();
 
-        setLoginStatus("IN PROGRESS");
+        props.setDisabled(true)
+        setLoginStatus("");
 
-        const { email, password } = state;
+        const { email, password } = props.fields;
 
         loginUser(email, password, handleLoginSuccess, handleLoginError);
 
@@ -44,31 +115,85 @@ function Login(props) {
     }
 
     return (
-        <div>
-            <h1>Gardenplace</h1>
-            <Link to="/">Home</Link>
-            <form onSubmit={handleSubmit}>
-                <input type="email" name="email" placeholder="E-mail address" value={state.email} onChange={handleChange} required />
-                <input type="password" name="password" placeholder="Password" value={state.password} onChange={handleChange} required />
-                <button type="submit">Login</button>
+        <div className="login-box">
+            <form className="login-form" onSubmit={handleSubmit}>
+                <input className="login-input" type="email" name="email" placeholder="E-mail address"
+                    value={props.fields.email} onChange={props.onChange} disabled={props.disabled} required />
+                <input className="login-input" type="password" name="password" placeholder="Password"
+                    value={props.fields.password} onChange={props.onChange} disabled={props.disabled} required />
+                <button type="submit" disabled={props.disabled}>Log In</button>
             </form>
             <LoginStatus loginStatus={loginStatus} />
         </div>
     )
 }
 
-function LoginStatus(props) {
-    let status_message = "";
-    if (props.LoginStatus === "FAILED") {
-        status_message = "Login failed. Why?"
+function FullRegisterBox(props) {
+    const history = useHistory();
+
+    const [registrationStatus, setRegistrationStatus] = useState("");
+
+    function handleRegistrationSuccess() {
+        history.push("/verify_email");
     }
-    else if (props.LoginStatus === "IN PROGRESS") {
-        status_message ="Login in progress."
+
+    function handleRegistrationError(error) {
+        if (error.response) {
+            setRegistrationStatus(error.response.data);
+        }
+        else if (error.request) {
+            setRegistrationStatus("There was no response from the server. Try again later.")
+        }
+        else {
+            console.log(error)
+        }
+
+        props.setDisabled(false)
+    }
+
+    function handleSubmit(event) {
+        event.preventDefault();
+
+        props.setDisabled(true)
+        setRegistrationStatus("");
+
+        const { email, password, passwordReentered } = props.fields;
+
+        registerUser(email, password, passwordReentered, handleRegistrationSuccess, handleRegistrationError);
+
+        return false; // Prevent default submit behavior since we override it
     }
 
     return (
-        <div>{status_message}</div>
+        <div className="login-box">
+            <form className="login-form" onSubmit={handleSubmit}>
+                <input className="login-input" type="email" name="email" placeholder="E-mail address"
+                    value={props.fields.email} onChange={props.onChange} disabled={props.disabled} required />
+                <input className="login-input" type="password" name="password" placeholder="Password"
+                    value={props.fields.password} onChange={props.onChange} disabled={props.disabled} required />
+                <input className="login-input" type="password" name="passwordReentered" placeholder="Re-enter Password" 
+                    value={props.fields.passwordReentered} onChange={props.onChange} disabled={props.disabled} required />
+                <button type="submit" disabled={props.disabled}>Sign Up</button>
+            </form>
+            <RegistrationStatus registrationStatus={registrationStatus} />
+        </div>
     )
 }
 
-export default Login;
+function LoginStatus(props) {
+    let status_message = props.loginStatus
+
+    return (
+        <div className="login-status">{status_message}</div>
+    )
+}
+
+function RegistrationStatus(props) {
+    let status_message = props.registrationStatus
+
+    return (
+        <div className="login-status">{status_message}</div>
+    )
+}
+
+export default Welcome;

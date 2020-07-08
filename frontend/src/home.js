@@ -1,13 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { logoutUser } from "./auth/auth";
+import Welcome from "./auth/login";
 
 function Home(props) {
     if (props.loggedIn) {
-        return LoggedInHome(props);
+        return <LoggedInHome {...props} />
     }
     else {
-        return LoggedOutHome(props);
+        return <Welcome {...props} />
     }
 }
 
@@ -24,16 +25,6 @@ function LoggedInHome(props) {
             <ConnectionsActivity></ConnectionsActivity>
         </div>
     )    
-}
-
-function LoggedOutHome(props) {
-    return (
-        <div>
-            <h1>Gardenplace</h1>
-            <Link to="/login">Login</Link>            
-            <Link to="/register">Register</Link>
-        </div>
-    )
 }
 
 function Navbar(props) {

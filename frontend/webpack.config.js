@@ -18,11 +18,16 @@ module.exports = env => {
                 },
                 {
                     test: /\.html$/,
+                    exclude: /node_modules/,
                     use: [
                         {
                             loader: "html-loader"
                         }
                     ]
+                },
+                {
+                    test: /\.css$/,
+                    use: ['style-loader', 'css-loader']
                 }
             ]
         },
@@ -35,12 +40,15 @@ module.exports = env => {
         externals: {
             'Config': JSON.stringify(is_production_mode() ? {
                 serverUrl: "https://gardenplace.showandtell.page",
-                routerBasename: "/gardenplace"
+                routerBasename: "/gardenplace",
+                publicStaticDir: "public-static"
             } : {
                 serverUrl: "http://127.0.0.1",
-                routerBasename: "/"
+                routerBasename: "/",
+                publicStaticDir: "static"
             })
         },
+        'devtool' : JSON.stringify(is_production_mode() ? "" : "source-map"),
         entry: './src/app.js'
     }
 }

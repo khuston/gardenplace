@@ -14,6 +14,19 @@ cd dist
 python3.8 -m http.server
 ```
 
+## Frontend: Debugging in VS Code (launch.json)
+
+```json
+{
+    "name": "Attach to Chrome",
+    "type": "chrome",
+    "request": "attach",
+    "port": 9222,
+    "url": "127.0.0.1",
+    "webRoot": "${workspaceFolder}/frontend"
+}
+```
+
 ## Frontend: Production Build
 
 ```bash
