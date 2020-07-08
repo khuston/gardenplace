@@ -8,7 +8,8 @@ import (
 )
 
 type RegistrationHandler struct {
-	DB UserDB
+	DB       UserDB
+	SendMail func(to string, body []byte) error
 }
 
 // ServeHTTP fulfills an incoming registration request if valid.
@@ -20,9 +21,11 @@ func (handler RegistrationHandler) ServeHTTP(writer http.ResponseWriter, request
 		err = payload.validate()
 		if err == nil {
 			err = registerUser(payload.Email, payload.Password, handler.DB)
-
 			if err == nil {
-				writer.WriteHeader(http.StatusCreated)
+				err = handler.SendMail(payload.Email, []byte("Hello"))
+				if err == nil {
+					writer.WriteHeader(http.StatusCreated)
+				}
 			}
 		}
 	}

@@ -3,12 +3,14 @@ package comms
 import (
 	"encoding/hex"
 	"net/http"
+	"strconv"
 	"time"
 )
 
 type Cookies struct {
 	Email string
 	Token []byte
+	Nonce int
 }
 
 func LoadCookies(request *http.Request, secureCookies bool) (*Cookies, error) {
@@ -28,6 +30,8 @@ func (cookies *Cookies) loadFromRequest(request *http.Request, secureCookies boo
 	cookies.Email = cookieMap[cookiePrefix+"Email"]
 	token, err := hex.DecodeString(cookieMap[cookiePrefix+"Token"])
 	cookies.Token = token
+	nonce, err := strconv.Atoi(cookieMap[cookiePrefix+"Nonce"])
+	cookies.Nonce = nonce
 
 	return err
 }
@@ -42,6 +46,8 @@ func (cookies *Cookies) Write(writer http.ResponseWriter, duration time.Duration
 	} else {
 		addCookie(writer, cookiePrefix+"Token", "", duration, secureCookies)
 	}
+
+	addCookie(writer, cookiePrefix+"Nonce", strconv.Itoa(cookies.Nonce), duration, secureCookies)
 
 }
 

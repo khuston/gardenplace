@@ -37,14 +37,31 @@ func (handler LoginHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	token, responseData, err := loginUser(payload.Email, payload.Password, ip, userAgent, handler.DB)
+	cookies, err := comms.LoadCookies(request, handler.SecureCookies)
+
+	var responseData loginResponseData
+
+	if payload.GetNonce {
+		var nonce int
+
+		nonce, err = handler.DB.getUserNonce(payload.Email)
+
+		cookies.Nonce = nonce
+
+		responseData = loginResponseData{}
+
+	} else {
+		var token []byte
+
+		token, responseData, err = loginUser(payload.Email, payload.Password, ip, userAgent, handler.DB, cookies.Nonce)
+
+		cookies = &comms.Cookies{Email: payload.Email, Token: token}
+	}
 
 	if err != nil {
 		handleError(err, writer)
 		return
 	}
-
-	cookies := comms.Cookies{Email: payload.Email, Token: token}
 
 	cookies.Write(writer, handler.DB.getAuthDuration(), handler.SecureCookies)
 
@@ -55,9 +72,15 @@ func (handler LoginHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 	err = encoder.Encode(responseData)
 }
 
-func loginUser(email string, password string, ip net.IP, userAgent string, db UserDB) ([]byte, loginResponseData, error) {
+func loginUser(email string, password string, ip net.IP, userAgent string, db UserDB, nonce int) ([]byte, loginResponseData, error) {
 
 	responseData := loginResponseData{}
+
+	err := db.checkAndIncrementUserNonce(email, nonce)
+
+	if err != nil {
+		return nil, responseData, err
+	}
 
 	hash, err := db.getHashForEmail(email)
 
@@ -68,9 +91,7 @@ func loginUser(email string, password string, ip net.IP, userAgent string, db Us
 	err = bcrypt.CompareHashAndPassword(hash, []byte(password))
 
 	if err != nil {
-		return nil, responseData, &FailedRequest{
-			Msg: "There was a problem logging in with this e-mail/password combination.",
-		}
+		return nil, responseData, &InvalidLogin{}
 	}
 
 	responseData.ValidEmailPasswordCombination = true

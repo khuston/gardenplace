@@ -12,6 +12,10 @@ type Configuration struct {
 	UseTLS                 bool
 	Port                   int64
 	AllowedOrigins         []string
+	SMTPEndpoint           string
+	SMTPUsername           string
+	SMTPPassword           string
+	SMTPFrom               string
 }
 
 func LoadConfiguration() (Configuration, error) {

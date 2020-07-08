@@ -9,6 +9,9 @@ env:
     DB_PASSWORD: gardenplace-db-credentials:password
     DB_HOST: gardenplace-db-credentials:host
     DB_PORT: gardenplace-db-credentials:port
+    MAIL_USERNAME: gardenplace-mail:Username
+    MAIL_PASSWORD: gardenplace-mail:Password
+    MAIL_ENDPOINT: gardenplace-mail:Endpoint
 
 phases:
   install:
@@ -28,7 +31,10 @@ phases:
           \"UserDBConnectionString\": \""$DB_USERNAME":"$DB_PASSWORD"@tcp("$DB_HOST":"$DB_PORT")/gardenplace\",
           \"UseTLS\": true,
           \"Port\": 9001,
-          \"AllowedOrigins\": [\"https://www.showandtell.page\"]
+          \"AllowedOrigins\": [\"https://www.showandtell.page\"],
+          \"SMTPEndpoint\": \""$MAIL_ENDPOINT"\",
+          \"SMTPUsername\": \""$MAIL_USERNAME"\",
+          \"SMTPPassword\": \""$MAIL_PASSWORD"\"
         }" > config.json
     finally:
       - echo $(ls)

@@ -13,8 +13,7 @@ function Register(props) {
     const [registrationStatus, setRegistrationStatus] = useState("");
 
     function handleRegistrationSuccess() {
-        checkLoggedIn(setLoggedIn, setUserID);
-        history.push("/register_twofactor");
+        history.push("/verify_email");
     }
 
     function handleRegistrationError(response_data) {

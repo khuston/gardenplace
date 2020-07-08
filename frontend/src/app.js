@@ -38,6 +38,10 @@ function App(props) {
                         <RegisterTwofactor {... props} />
                     )}
                     />
+                    <Route exact path={"/verify_email"} render={props => (
+                        <VerifyEmail {... props} />
+                    )}
+                    />
                 </Switch>
             </BrowserRouter>
         </div>

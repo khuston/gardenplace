@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http"
+	"net/mail"
 	"strconv"
 	"time"
 
@@ -23,7 +24,17 @@ func main() {
 		return
 	}
 
-	db := authLib.InitUserDBConnection(configuration.UserDBConnectionString)
+	db, err := authLib.InitUserDBConnection(configuration.UserDBConnectionString)
+
+	if err != nil {
+		return
+	}
+
+	smtpFrom, err := mail.ParseAddress(configuration.SMTPFrom)
+	mailer := authLib.SMTPVerificationMailer{Endpoint: configuration.SMTPEndpoint, Username: configuration.SMTPUsername, Password: configuration.SMTPPassword, From: smtpFrom}
+	if err != nil {
+		return
+	}
 
 	loginHandler := authLib.LoginHandler{DB: db, SecureCookies: configuration.UseTLS}
 
@@ -31,7 +42,7 @@ func main() {
 
 	// TODO:     verifyHandler := auth.VerifyHandler{DB: db}
 
-	registrationHandler := authLib.RegistrationHandler{DB: db}
+	registrationHandler := authLib.RegistrationHandler{DB: db, SendMail: mailer.SendMail}
 
 	serveLoginWithCORS := comms.CORSHandler(loginHandler, configuration.AllowedOriginURLs())
 

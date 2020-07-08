@@ -3,6 +3,7 @@ package authLib
 import (
 	"database/sql"
 	"fmt"
+	"math"
 	"net"
 	"time"
 )
@@ -13,6 +14,8 @@ type UserDB interface {
 	storeSessionToken(email string, token []byte, ip net.IP, userAgent string) error
 	revokeSessionToken(email string, token []byte) error
 	getAuthDuration() time.Duration
+	getUserNonce(email string) (int, error)
+	checkAndIncrementUserNonce(email string, nonce int) error
 }
 
 type SQLUserDB struct {
@@ -20,7 +23,7 @@ type SQLUserDB struct {
 	authDuration time.Duration
 }
 
-func InitUserDBConnection(connectionStr string) UserDB {
+func InitUserDBConnection(connectionStr string) (UserDB, error) {
 	db, err := sql.Open("mysql", connectionStr)
 
 	if err != nil {
@@ -29,7 +32,7 @@ func InitUserDBConnection(connectionStr string) UserDB {
 
 	userDB := SQLUserDB{DB: db, authDuration: time.Hour * 1.0}
 
-	return userDB
+	return userDB, err
 }
 
 func (db SQLUserDB) storeEmailAndHash(email string, hash string) error {
@@ -121,4 +124,48 @@ func (db SQLUserDB) revokeSessionToken(email string, token []byte) error {
 
 func (db SQLUserDB) getAuthDuration() time.Duration {
 	return db.authDuration // nanoseconds!
+}
+
+func (db SQLUserDB) getUserNonce(email string) (int, error) {
+	statement, err := db.DB.Prepare("SELECT nonce FROM users WHERE email = ?")
+
+	var nonce int = -1
+
+	err = statement.QueryRow(email).Scan(&nonce)
+
+	if err != nil {
+		return nonce, &InvalidLogin{}
+	}
+
+	return nonce, err
+}
+
+func (db SQLUserDB) checkAndIncrementUserNonce(email string, nonce int) error {
+	// 1. Check Nonce
+	statement, err := db.DB.Prepare("SELECT nonce FROM users WHERE email = ?")
+
+	var nonceInDB int
+
+	err = statement.QueryRow(email).Scan(&nonceInDB)
+
+	if err != nil {
+		return err
+	}
+
+	if nonce != nonceInDB {
+		return &NonceError{}
+	}
+
+	// 2. Increment Nonce
+	if nonce == math.MaxInt32 {
+		nonce = 0
+	} else {
+		nonce = nonce + 1
+	}
+
+	statement, err = db.DB.Prepare("UPDATE users SET nonce = ? WHERE email = ?")
+
+	_, err = statement.Exec(nonce, email)
+
+	return nil
 }

@@ -25,26 +25,37 @@ export function registerUser(email, password, password_reentered, handleSuccess,
 }
 
 export function loginUser(email, password, handleSuccess, handleError, handleRequireTwoFactor) {
-    let payload = make_login_payload(email, password);
 
+    // 1. Get Nonce Cookie (e-mail required because nonce is per-user)
+    var payload = make_getnonce_payload(email);
     axios
         .post(login_endpoint, payload, { withCredentials: true })
         .catch(error => {
             console.log(error)
             handleError(error.response.data);
         })
-        .then(response => {
-            if (response.status === 200) {
-                if (response.data.LoggedIn === true) {
-                    handleSuccess();
-                }
-                else if (response.data.RequireTwoFactor === true) {
-                    handleRequireTwoFactor()
-                }
-                else {
-                    handleError(response.data)
-                }
-            }
+        .then(() => {
+            // 2. Submit Login Credentials with Nonce Cookie
+            payload = make_login_payload(email, password);
+            axios
+                .post(login_endpoint, payload, { withCredentials: true })
+                .catch(error => {
+                    console.log(error)
+                    handleError(error.response.data);
+                })
+                .then(response => {
+                    if (response.status === 200) {
+                        if (response.data.LoggedIn === true) {
+                            handleSuccess();
+                        }
+                        else if (response.data.RequireTwoFactor === true) {
+                            handleRequireTwoFactor()
+                        }
+                        else {
+                            handleError(response.data)
+                        }
+                    }
+                })
         })
 }
 
@@ -96,5 +107,12 @@ function make_login_payload(email, password, one_time_password) {
         Email: email,
         Password: password,
         OneTimePassword: one_time_password
+    }
+}
+
+function make_getnonce_payload(email) {
+    return {
+        Email: email,
+        GetNonce: true
     }
 }

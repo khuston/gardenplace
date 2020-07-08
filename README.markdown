@@ -9,8 +9,7 @@ At this stage, Gardenplace is a personal exercise and demo masquerading as an ap
 ```bash
 cd frontend
 yarn
-set NODE_ENV=development
-yarn run build --mode=development
+yarn run build --mode=development --env.development
 cd dist
 python3.8 -m http.server
 ```
