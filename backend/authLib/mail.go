@@ -6,7 +6,7 @@ import (
 )
 
 type Mailer interface {
-	SendMail(to string, body []byte) error
+	SendMail(to string, subject string, body string) error
 }
 
 type SMTPVerificationMailer struct {
@@ -14,14 +14,18 @@ type SMTPVerificationMailer struct {
 	Username string
 	Password string
 	From     *mail.Address
+	FromName string
 }
 
-func (mailer SMTPVerificationMailer) SendMail(to string, body []byte) error {
+func (mailer SMTPVerificationMailer) SendMail(to string, subject string, body string) error {
 
-	msg := []byte("To: " + to + "\r\n" +
-		"Subject: Gardenplace E-mail Verification\r\n" +
-		"\r\n" +
-		"This is the email body.\r\n")
+	msg := []byte("From: " + mailer.FromName + "\r\n" +
+		"To: " + to + "\r\n" +
+		"Subject: " + subject + "\r\n" +
+		"Mime-Version: 1.0;\r\n" +
+		"Content-Type: text/html; charset=\"ISO-8859-1\";\r\n" +
+		"Content-Transfer-Encoding: 7bit;\r\n" +
+		"\r\n" + body)
 
 	var auth smtp.Auth = nil
 

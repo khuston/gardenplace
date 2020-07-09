@@ -4,7 +4,8 @@ import Config from 'Config';
 const login_endpoint = Config.serverUrl + ":9001/login";
 const logout_endpoint = Config.serverUrl + ":9001/logout";
 const registration_endpoint = Config.serverUrl + ":9001/register";
-const api_endpoint = Config.serverUrl + ":9001/api"
+const verification_endpoint = Config.serverUrl + ":9001/verify";
+const api_endpoint = Config.serverUrl + ":9002/api"
 
 export function registerUser(email, password, password_reentered, handleSuccess, handleError) {
     let payload = make_registration_payload(email, password, password_reentered);
@@ -22,7 +23,7 @@ export function registerUser(email, password, password_reentered, handleSuccess,
         .catch(error => handleError(error))
 }
 
-export function loginUser(email, password, handleSuccess, handleError, handleRequireTwoFactor) {
+export function loginUser(email, password, handleSuccess, handleError, handleRequireTwoFactor, handleRequireEmailVerification) {
 
     // 1. Get Nonce Cookie (e-mail required because nonce is per-user)
     var payload = make_getnonce_payload(email);
@@ -43,6 +44,9 @@ export function loginUser(email, password, handleSuccess, handleError, handleReq
                         else if (response.data.RequireTwoFactor === true) {
                             handleRequireTwoFactor()
                         }
+                        else if (response.data.RequireEmailVerification === true) {
+                            handleRequireEmailVerification()
+                        }
                         else {
                             handleError({response: response})
                         }
@@ -57,8 +61,20 @@ export function logoutUser(handleSuccess) {
         .catch(error => {
             console.log(error)
         })
+        .then(handleSuccess)
+}
+
+export function verifyEmail(code, handleSuccess, handleFailure) {
+    axios
+        .post(verification_endpoint, {verificationCode: code})
+        .catch(handleFailure)
         .then(response => {
-            handleSuccess()
+            if (response && response.status === 200) {
+                handleSuccess()
+            }
+            else {
+                handleFailure()
+            }
         })
 }
 

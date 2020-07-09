@@ -8,8 +8,9 @@ import (
 )
 
 type RegistrationHandler struct {
-	DB       UserDB
-	SendMail func(to string, body []byte) error
+	DB             UserDB
+	SendMail       func(to string, subject string, body string) error
+	VerifyEndpoint string
 }
 
 // ServeHTTP fulfills an incoming registration request if valid.
@@ -22,9 +23,15 @@ func (handler RegistrationHandler) ServeHTTP(writer http.ResponseWriter, request
 		if err == nil {
 			err = registerUser(payload.Email, payload.Password, handler.DB)
 			if err == nil {
-				err = handler.SendMail(payload.Email, []byte("Hello"))
+				verificationCode, err := handler.DB.createEmailVerificationCode(payload.Email)
 				if err == nil {
-					writer.WriteHeader(http.StatusCreated)
+					verificationLink := handler.VerifyEndpoint + "?verification_code=" + verificationCode
+					msg := "Your verification code:<br /><h2>" + verificationCode + "</h2><br />Or you can click this link: <a href=\"" + verificationLink +
+						"\">" + verificationLink + "</a><br /><br />If you did not register for Gardenplace, then disregard this e-mail."
+					err = handler.SendMail(payload.Email, "Verify Your E-Mail Address", msg)
+					if err == nil {
+						writer.WriteHeader(http.StatusCreated)
+					}
 				}
 			}
 		}

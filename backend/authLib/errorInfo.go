@@ -42,7 +42,7 @@ func handleError(err error, writer http.ResponseWriter) {
 	} else if errors.As(err, &ne) {
 		http.Error(writer, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 	} else if errors.As(err, &il) {
-		http.Error(writer, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+		http.Error(writer, il.Error(), http.StatusUnauthorized)
 	} else {
 		log.Println(err.Error())
 		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)

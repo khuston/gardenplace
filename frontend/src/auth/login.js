@@ -101,6 +101,10 @@ function BigLoginBox(props) {
         props.setDisabled(false)
     }
 
+    function handleRequireEmailVerification() {
+        history.push("/verify_email")
+    }
+
     function handleSubmit(event) {
         event.preventDefault();
 
@@ -109,7 +113,7 @@ function BigLoginBox(props) {
 
         const { email, password } = props.fields;
 
-        loginUser(email, password, handleLoginSuccess, handleLoginError);
+        loginUser(email, password, handleLoginSuccess, handleLoginError, () => {}, handleRequireEmailVerification);
 
         return false; // Prevent default submit behavior since we override it
     }

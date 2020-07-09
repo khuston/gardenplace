@@ -31,7 +31,8 @@ func main() {
 	}
 
 	smtpFrom, err := mail.ParseAddress(configuration.SMTPFrom)
-	mailer := authLib.SMTPVerificationMailer{Endpoint: configuration.SMTPEndpoint, Username: configuration.SMTPUsername, Password: configuration.SMTPPassword, From: smtpFrom}
+	mailer := authLib.SMTPVerificationMailer{Endpoint: configuration.SMTPEndpoint, Username: configuration.SMTPUsername, Password: configuration.SMTPPassword,
+		From: smtpFrom, FromName: configuration.SMTPFromName}
 	if err != nil {
 		return
 	}
@@ -40,9 +41,9 @@ func main() {
 
 	logoutHandler := authLib.LogoutHandler{DB: db, SecureCookies: configuration.UseTLS}
 
-	// TODO:     verifyHandler := auth.VerifyHandler{DB: db}
+	verifyHandler := authLib.VerifyHandler{DB: db}
 
-	registrationHandler := authLib.RegistrationHandler{DB: db, SendMail: mailer.SendMail}
+	registrationHandler := authLib.RegistrationHandler{DB: db, SendMail: mailer.SendMail, VerifyEndpoint: configuration.VerifyEndpoint}
 
 	serveLoginWithCORS := comms.CORSHandler(loginHandler, configuration.AllowedOriginURLs())
 
@@ -50,13 +51,15 @@ func main() {
 
 	serveRegistrationWithCORS := comms.CORSHandler(registrationHandler, configuration.AllowedOriginURLs())
 
+	serveVerificationWithCORS := comms.CORSHandler(verifyHandler, configuration.AllowedOriginURLs())
+
 	http.HandleFunc("/register", serveRegistrationWithCORS)
 
 	http.HandleFunc("/login", serveLoginWithCORS)
 
 	http.HandleFunc("/logout", serveLogoutWithCORS)
 
-	// TODO:   http.HandleFunc("/verify/", verifyHandler)
+	http.HandleFunc("/verify", serveVerificationWithCORS)
 
 	// 2. Write Status
 	reportStatusAfterInitialize(configuration)

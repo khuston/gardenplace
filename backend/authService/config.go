@@ -16,6 +16,8 @@ type Configuration struct {
 	SMTPUsername           string
 	SMTPPassword           string
 	SMTPFrom               string
+	SMTPFromName           string
+	VerifyEndpoint         string
 }
 
 func LoadConfiguration() (Configuration, error) {

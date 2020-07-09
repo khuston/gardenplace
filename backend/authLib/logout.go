@@ -15,7 +15,6 @@ type logoutResponseData struct {
 	LoggedOut bool
 }
 
-// ServeHTTP fulfills an incoming login request if valid.
 func (handler LogoutHandler) ServeHTTP(writer http.ResponseWriter, request *http.Request) {
 
 	cookies, err := comms.LoadCookies(request, handler.SecureCookies)

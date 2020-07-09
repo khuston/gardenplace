@@ -19,7 +19,7 @@ func CORSHandler(h http.Handler, allowedOrigins []*url.URL) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
 		originURL, _ := url.ParseRequestURI(origin)
-		if allowOrigin(originURL) {
+		if originURL != nil && allowOrigin(originURL) {
 
 			header := w.Header()
 			header.Add("Access-Control-Allow-Origin", origin)
@@ -35,6 +35,8 @@ func CORSHandler(h http.Handler, allowedOrigins []*url.URL) http.HandlerFunc {
 			} else {
 				h.ServeHTTP(w, r)
 			}
+		} else {
+			http.Error(w, http.StatusText(http.StatusForbidden), http.StatusForbidden)
 		}
 	}
 }

@@ -4,6 +4,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Home from "./home";
 import About from "./about";
 import RegisterTwofactor from "./auth/register_twofactor";
+import { VerifyEmail } from "./auth/verify_email"
 import { checkLoggedIn } from "./auth/auth"
 import Config from 'Config';
 
@@ -24,14 +25,15 @@ function App(props) {
                         <About {... props} loggedIn={loggedIn} />
                     )}
                     />
+                    <Route exact path={"/verify_email"} render={props => (
+                        <VerifyEmail {... props} loggedIn={loggedIn} />
+                    )}
+                    />
                     <Route exact path={"/register_twofactor"} render={props => (
                         <RegisterTwofactor {... props} />
                     )}
                     />
-                    <Route exact path={"/verify_email"} render={props => (
-                        <VerifyEmail {... props} />
-                    )}
-                    />
+
                 </Switch>
             </BrowserRouter>
         </div>

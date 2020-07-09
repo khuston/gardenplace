@@ -34,7 +34,10 @@ phases:
           \"AllowedOrigins\": [\"https://www.showandtell.page\"],
           \"SMTPEndpoint\": \""$MAIL_ENDPOINT"\",
           \"SMTPUsername\": \""$MAIL_USERNAME"\",
-          \"SMTPPassword\": \""$MAIL_PASSWORD"\"
+          \"SMTPPassword\": \""$MAIL_PASSWORD"\",
+          \"SMTPFrom\": \"no-reply@www.showandtell.page\",
+          \"SMTPFromName\": \"Gardenplace Registration\",
+          \"VerifyEndpoint\": \"https://www.showandtell.page/gardenplace"
         }" > config.json
     finally:
       - echo $(ls)

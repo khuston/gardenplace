@@ -20,6 +20,7 @@ type loginResponseData struct {
 	ValidEmailPasswordCombination bool
 	LoggedIn                      bool
 	RequireTwoFactor              bool
+	RequireEmailVerification      bool
 }
 
 // ServeHTTP fulfills an incoming login request if valid.
@@ -63,7 +64,7 @@ func (handler LoginHandler) ServeHTTP(writer http.ResponseWriter, request *http.
 		return
 	}
 
-	cookies.Write(writer, handler.DB.getAuthDuration(), handler.SecureCookies)
+	cookies.Write(writer, handler.DB.getSessionDuration(), handler.SecureCookies)
 
 	writer.WriteHeader(http.StatusOK)
 
@@ -95,6 +96,13 @@ func loginUser(email string, password string, ip net.IP, userAgent string, db Us
 	}
 
 	responseData.ValidEmailPasswordCombination = true
+
+	isVerified, _ := db.isEmailVerified(email)
+
+	if !isVerified {
+		responseData.RequireEmailVerification = true
+		return nil, responseData, err
+	}
 
 	token := make([]byte, 16)
 	rand.Read(token)

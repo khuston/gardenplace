@@ -2,9 +2,17 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { logoutUser } from "./auth/auth";
 import Welcome from "./auth/login";
+import { useLocation } from "react-router-dom";
+import { VerificationWaitingPage } from "./auth/verify_email";
 
 function Home(props) {
-    if (props.loggedIn) {
+
+    let verificationCode = (new URLSearchParams(useLocation().search)).get("verification_code")
+
+    if (verificationCode) {
+        return <VerificationWaitingPage verificationCode={verificationCode} {...props} />
+    }
+    else if (props.loggedIn) {
         return <LoggedInHome {...props} />
     }
     else {
