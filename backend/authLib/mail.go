@@ -3,6 +3,7 @@ package authLib
 import (
 	"net/mail"
 	"net/smtp"
+	"time"
 )
 
 type Mailer interface {
@@ -22,6 +23,7 @@ func (mailer SMTPVerificationMailer) SendMail(to string, subject string, body st
 	msg := []byte("From: " + mailer.FromName + "\r\n" +
 		"To: " + to + "\r\n" +
 		"Subject: " + subject + "\r\n" +
+		"Date: " + time.Now().Format(time.RFC1123Z) + "\r\n" +
 		"Mime-Version: 1.0;\r\n" +
 		"Content-Type: text/html; charset=\"ISO-8859-1\";\r\n" +
 		"Content-Transfer-Encoding: 7bit;\r\n" +
