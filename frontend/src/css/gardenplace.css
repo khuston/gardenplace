@@ -50,3 +50,12 @@ img.my-plants-thumbnail {
     border: 1px solid #000000;
     margin: 0.5em;
 }
+
+.new-plant-form {
+    display: block;
+}
+
+.new-plant-input {
+    display: block;
+    margin: 0.3em;
+}

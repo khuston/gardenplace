@@ -9,13 +9,12 @@ export function NewPlant(props: Object) {
     return (
         <div>
             <CommonHeader setLoggedIn={props.setLoggedIn}/>
-            <form className="new-plant-form" onSubmit={() => {}}>
-                <input className="new-plant-input" type="text" name="name" placeholder="Plant name"
-                    value={name} onChange={(event) => {setName(event.target.value)}} disabled={disabled} required />
-                <label for="image">Attach an image (optional):</label>
-                <input type="file" id="image" name="image"></input>
-                <button type="submit" disabled={disabled}>Create</button>
-            </form>
+            <h2>Add a New Plant</h2>
+            <input className="new-plant-input" type="text" name="name" placeholder="Plant name"
+                value={name} onChange={(event) => {setName(event.target.value)}} disabled={disabled} required />
+            <label for="image" disabled={disabled}>Attach an image (optional):</label>
+            <input className="new-plant-input" type="file" id="image" name="image" accept="image/png, image/jpeg" disabled={disabled} />
+            <button className="new-plant-input" type="submit" onClick={() => {}} disabled={disabled}>Create</button>
         </div>
     )    
 }
