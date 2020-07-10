@@ -1,9 +1,10 @@
+//@flow
 import React, { useState, useEffect } from "react";
 import { verifyEmail } from "./auth";
 import { useHistory } from "react-router-dom";
 import styles from '../css/gardenplace.css'
 
-export function VerifyEmail(props) {
+export function VerifyEmail(props: Object) {
 
     const [verificationCode, setVerificationCode] = useState(props.verificationCode)
 
@@ -18,7 +19,7 @@ export function VerifyEmail(props) {
     }
 }
 
-function VerificationCodeEntry(props) {
+function VerificationCodeEntry(props: Object) {
     return (
         <div>
             <h1>Gardenplace</h1>
@@ -32,7 +33,7 @@ function VerificationCodeEntry(props) {
     )
 }
 
-export function VerificationWaitingPage(props) {
+export function VerificationWaitingPage(props: Object) {
     const history = useHistory();
 
     const [message, setMessage] = useState("Verifying e-mail address...")

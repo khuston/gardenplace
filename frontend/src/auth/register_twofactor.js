@@ -1,7 +1,8 @@
+//@flow
 import React from "react";
 import { Link } from "react-router-dom";
 
-function RegisterTwofactor(props) {
+function RegisterTwofactor(props: Object) {
 
     return (
         <div>

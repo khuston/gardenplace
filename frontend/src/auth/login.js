@@ -1,10 +1,12 @@
+//@flow
 import React, { useState } from "react";
 import { loginUser, registerUser } from "./auth";
 import { useHistory } from "react-router-dom";
+//$FlowFixMe
 import Config from 'Config';
 import styles from '../css/gardenplace.css'
 
-function Welcome(props) {
+function Welcome(props: Object) {
     const [registerPopup, setRegisterPopup] = useState(false)
 
     const [fields, setFields] = useState({

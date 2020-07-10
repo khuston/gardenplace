@@ -44,3 +44,9 @@
 .login-input {
     margin: 0.3em;
 }
+
+img.my-plants-thumbnail {
+    width: 10em;
+    border: 1px solid #000000;
+    margin: 0.5em;
+}

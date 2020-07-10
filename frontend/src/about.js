@@ -1,7 +1,8 @@
+//@flow
 import React from "react";
 import { Link } from "react-router-dom";
 
-function About(props) {
+function About(props: Object) {
     return (
         <div>
             <h1>Gardenplace</h1>

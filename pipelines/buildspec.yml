@@ -17,6 +17,7 @@ phases:
   install:
     runtime-versions:
       golang: latest
+      nodejs: latest
   build:
     commands:
       - cd backend/authService

@@ -1,3 +1,4 @@
+//@flow
 import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
@@ -5,11 +6,13 @@ import Home from "./home";
 import About from "./about";
 import RegisterTwofactor from "./auth/register_twofactor";
 import { VerifyEmail } from "./auth/verify_email"
+import { NewPlant } from "./new_plant"
 import { checkLoggedIn } from "./auth/auth"
+//$FlowFixMe
 import Config from 'Config';
 
 
-function App(props) {
+function App(props: Object) {
 
     const [loggedIn, setLoggedIn] = useState(checkLoggedIn());
 
@@ -27,6 +30,10 @@ function App(props) {
                     />
                     <Route exact path={"/verify_email"} render={props => (
                         <VerifyEmail {... props} loggedIn={loggedIn} />
+                    )}
+                    />
+                    <Route exact path={"/new_plant"} render={props => (
+                        <NewPlant {... props} setLoggedIn={setLoggedIn} />
                     )}
                     />
                     <Route exact path={"/register_twofactor"} render={props => (

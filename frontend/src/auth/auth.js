@@ -1,4 +1,6 @@
+//@flow
 import axios from "axios";
+//$FlowFixMe
 import Config from 'Config';
 
 const login_endpoint = Config.serverUrl + ":9001/login";
@@ -7,7 +9,7 @@ const registration_endpoint = Config.serverUrl + ":9001/register";
 const verification_endpoint = Config.serverUrl + ":9001/verify";
 const api_endpoint = Config.serverUrl + ":9002/api"
 
-export function registerUser(email, password, password_reentered, handleSuccess, handleError) {
+export function registerUser(email: string, password: string, password_reentered: string, handleSuccess: () => mixed, handleError: (Object) => mixed) {
     let payload = make_registration_payload(email, password, password_reentered);
 
     axios
@@ -23,7 +25,8 @@ export function registerUser(email, password, password_reentered, handleSuccess,
         .catch(error => handleError(error))
 }
 
-export function loginUser(email, password, handleSuccess, handleError, handleRequireTwoFactor, handleRequireEmailVerification) {
+export function loginUser(email: string, password: string, handleSuccess: () => mixed,
+    handleError: (Object) => mixed, handleRequireTwoFactor: () => mixed, handleRequireEmailVerification: () => mixed) {
 
     // 1. Get Nonce Cookie (e-mail required because nonce is per-user)
     var payload = make_getnonce_payload(email);
@@ -32,7 +35,7 @@ export function loginUser(email, password, handleSuccess, handleError, handleReq
         .catch(error => handleError(error))
         .then(() => {
             // 2. Submit Login Credentials with Nonce Cookie
-            payload = make_login_payload(email, password);
+            payload = make_login_payload(email, password, "");
             axios
                 .post(login_endpoint, payload, { withCredentials: true })
                 .catch(error => handleError(error))
@@ -55,7 +58,7 @@ export function loginUser(email, password, handleSuccess, handleError, handleReq
         })
 }
 
-export function logoutUser(handleSuccess) {
+export function logoutUser(handleSuccess: () => mixed) {
     axios
         .post(logout_endpoint, {}, { withCredentials: true })
         .catch(error => {
@@ -64,7 +67,7 @@ export function logoutUser(handleSuccess) {
         .then(handleSuccess)
 }
 
-export function verifyEmail(code, handleSuccess, handleFailure) {
+export function verifyEmail(code: string, handleSuccess: () => mixed, handleFailure: () => mixed) {
     axios
         .post(verification_endpoint, {verificationCode: code})
         .catch(handleFailure)
@@ -94,7 +97,7 @@ export function checkLoggedIn() {
         })
 }
 
-function make_registration_payload(email, password, password_reentered) {
+function make_registration_payload(email: string, password: string, password_reentered: string) {
     return {
         email: email,
         password: password,
@@ -102,7 +105,7 @@ function make_registration_payload(email, password, password_reentered) {
     }
 }
 
-function make_login_payload(email, password, one_time_password) {
+function make_login_payload(email: string, password: string, one_time_password: string) {
     return {
         email: email,
         password: password,
@@ -110,7 +113,7 @@ function make_login_payload(email, password, one_time_password) {
     }
 }
 
-function make_getnonce_payload(email) {
+function make_getnonce_payload(email: string) {
     return {
         email: email,
         getNonce: true

@@ -1,11 +1,15 @@
+//@flow
 import React from "react";
 import { Link } from "react-router-dom";
-import { logoutUser } from "./auth/auth";
 import Welcome from "./auth/login";
 import { useLocation } from "react-router-dom";
 import { VerificationWaitingPage } from "./auth/verify_email";
+import { CommonHeader } from "./header.js"
+//$FlowFixMe
+import Config from 'Config';
+import styles from "./css/gardenplace.css"
 
-function Home(props) {
+function Home(props: Object) {
 
     let verificationCode = (new URLSearchParams(useLocation().search)).get("verification_code")
 
@@ -20,45 +24,46 @@ function Home(props) {
     }
 }
 
-function LoggedInHome(props) {
+function LoggedInHome(props: Object) {
     return (
         <div>
-            <h1>Gardenplace</h1>
-            <Navbar setLoggedIn={props.setLoggedIn}></Navbar>
-            Favorite Gardens
-            <FavoriteGardens></FavoriteGardens>
-            Favorite Plants
-            <FavoritePlants></FavoritePlants>
-            Connections Activity
-            <ConnectionsActivity></ConnectionsActivity>
+            <CommonHeader setLoggedIn={props.setLoggedIn}/>
+            <h2>My Plants</h2>
+            <MyPlants myPlants={[{imageUrl: ""}, {imageUrl: ""}]}/>
+            <h2>Recent Activity</h2>
+            <RecentActivity />
         </div>
     )    
 }
 
-function Navbar(props) {
+function MyPlants(props) {
 
-    function onClickLogout(event) {
-        logoutUser(() => { props.setLoggedIn(false) })
-    }
+    const myPlants = props.myPlants.map((plant) =>
+        <img className="my-plants-thumbnail"
+            key={plant.imageUrl} src={plant.imageUrl} />
+        );
 
-    return (
-        <div>
-            <Link to="/connect">Connect</Link>
-            <Link to="/about">About</Link>
-            <Link to="/account">Account</Link>
-            <a href="#" onClick={onClickLogout}>Logout</a>
+    return(
+        <div className="my-plants">
+            <NewPlant />
+            {myPlants}
         </div>
     )
 }
 
-function BlankElement(props) {
+function NewPlant(props) {
     return (
-        <div></div>
+        <Link to="/new_plant">
+            <img className="my-plants-thumbnail" src={Config.publicStaticDir + "/add-plant.png"} />
+        </Link>
     )
 }
 
-let FavoriteGardens = BlankElement;
-let FavoritePlants = BlankElement;
-let ConnectionsActivity = BlankElement;
+function RecentActivity(props) {
+    return(
+        <div></div>
+    )
+
+}
 
 export default Home;
