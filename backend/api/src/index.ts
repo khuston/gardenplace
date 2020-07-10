@@ -1,7 +1,27 @@
 import express from "express";
-const app = express()
-const port = 3000
+import { graphqlHTTP } from "express-graphql";
+import { buildSchema } from "graphql";
 
-app.get('/', (req, res) => res.send('Hello World!'))
+// Construct a schema, using GraphQL schema language
+const schema = buildSchema(`
+  type Query {
+    hello: String
+  }
+`);
 
-app.listen(port, () => {return}})
+// The root provides a resolver function for each API endpoint
+const root = {
+  hello: () => {
+    return 'Hello world!';
+  },
+};
+
+const app = express();
+
+app.use('/graphql', graphqlHTTP({
+    schema,
+    rootValue: root,
+    graphiql: true,
+}));
+
+app.listen(3000);
