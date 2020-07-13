@@ -1,27 +1,30 @@
 import express from "express";
+import cors from "cors";
 import { graphqlHTTP } from "express-graphql";
-import { buildSchema } from "graphql";
-
-// Construct a schema, using GraphQL schema language
-const schema = buildSchema(`
-  type Query {
-    hello: String
-  }
-`);
+import { schema } from "./schema"
+import { makeRootValue } from "./resolvers"
+import { loadConfig, initDB } from "./config"
 
 // The root provides a resolver function for each API endpoint
-const root = {
-  hello: () => {
-    return 'Hello world!';
-  },
-};
-
+const port = 3000;
 const app = express();
 
-app.use('/graphql', graphqlHTTP({
+// initialize DB
+const config = loadConfig();
+
+const db = initDB(config);
+
+const rootValue = makeRootValue(db);
+
+const corsOptions = {
+    origin: config.allowedOrigins,
+    optionsSuccessStatus: 200
+}
+
+app.use('/graphql', cors(corsOptions), graphqlHTTP({
     schema,
-    rootValue: root,
+    rootValue,
     graphiql: true,
 }));
 
-app.listen(3000);
+app.listen(port);
