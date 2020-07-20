@@ -9,12 +9,18 @@ interface RequestWithUserID extends express.Request {
 
 export class AuthenticationError extends Error {};
 
+const sessionNonceCookieName = "SessionNonce";
+const emailCookieName = "Email";
+const tokenCookieName = "Token";
+
+const maxInt32 = 2147483647;
+
 
 export function makeAuthHandler(db: mysql.Connection, secureCookies: boolean) {
 
     const prefix = getCookiePrefix(secureCookies)
-    const emailCookie: string = prefix + "Email"
-    const tokenCookie: string = prefix + "Token"
+    const emailCookie: string = prefix + emailCookieName
+    const tokenCookie: string = prefix + tokenCookieName
 
     return handleAuth
 
@@ -68,7 +74,7 @@ export function makeAuthHandler(db: mysql.Connection, secureCookies: boolean) {
 export function makeNonceHandler(db: mysql.Connection, secureCookies: boolean, sessionDuration: number) {
 
     const prefix = getCookiePrefix(secureCookies)
-    const nonceCookie: string = prefix + "SessionNonce"
+    const nonceCookie: string = prefix + sessionNonceCookieName
 
     return handleNonce
 
@@ -180,8 +186,6 @@ async function getSessionNonce(db: mysql.Connection, sessionID: ID): Promise<ID>
 
 }
 
-const maxInt32 = 2147483647
-
 async function incrementSessionNonce(db: mysql.Connection, sessionID: ID): Promise<ID> {
 
     let nonce = 0
@@ -212,7 +216,7 @@ async function incrementSessionNonce(db: mysql.Connection, sessionID: ID): Promi
 
 function setSessionNonce(response: express.Response, nonce: ID, secureCookies: boolean, sessionDuration: number) {
 
-    const sessionNonceCookie = getCookiePrefix(secureCookies) + "SessionNonce"
+    const sessionNonceCookie = getCookiePrefix(secureCookies) + sessionNonceCookieName
 
     const expires = new Date(Date.now() + 1000 * sessionDuration)
 
