@@ -6,6 +6,7 @@ interface Configuration {
     user: string
     password: string
     allowedOrigins: string[]
+    useTLS: boolean
 }
 
 function isValidConfiguration(config: any): boolean {

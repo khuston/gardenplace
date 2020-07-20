@@ -168,7 +168,7 @@ func (db SQLUserDB) checkAndIncrementUserNonce(email string, nonce int) error {
 	}
 
 	// 2. Increment Nonce
-	if nonce == math.MaxInt32 {
+	if nonce >= math.MaxInt32 {
 		nonce = 0
 	} else {
 		nonce = nonce + 1
