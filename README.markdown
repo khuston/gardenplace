@@ -4,7 +4,7 @@
 
 At this stage, Gardenplace is a personal exercise and demo masquerading as an app offering social media for gardeners.
 
-## Frontend: Manual Testing
+## Frontend: Development Build and Manual Testing
 
 ```bash
 cd frontend
@@ -15,19 +15,6 @@ cd dist
 python3.8 -m http.server
 ```
 
-## Frontend: Debugging in VS Code (launch.json)
-
-```json
-{
-    "name": "Attach to Chrome",
-    "type": "chrome",
-    "request": "attach",
-    "port": 9222,
-    "url": "127.0.0.1",
-    "webRoot": "${workspaceFolder}/frontend"
-}
-```
-
 ## Frontend: Production Build
 
 ```bash
@@ -35,6 +22,55 @@ cd frontend
 yarn
 yarn run flow
 yarn run build --mode=production --env.production
+```
+
+## Backend: Authentication Service Build
+
+```bash
+cd backend/authService
+go build
+```
+
+## Backend: API Build
+
+```bash
+cd backend/api
+yarn
+yarn run prestart
+```
+
+## Debugging in VS Code (launch.json)
+
+```json
+{
+    "configurations": [
+    
+        {
+            "name": "Launch API",
+            "program": "${workspaceFolder}/backend/api/dist/index.js",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "pwa-node"
+        },
+        {
+            "name": "Attach to Chrome",
+            "type": "chrome",
+            "request": "attach",
+            "port": 9222,
+            "url": "127.0.0.1",
+            "webRoot": "${workspaceFolder}/frontend"
+        },
+        {
+            "name": "Launch authService",
+            "type": "go",
+            "request": "launch",
+            "mode": "exec",
+            "program": "${workspaceFolder}/backend/authService/authService.exe",
+        }
+    ]
+}
 ```
 
 ## AWS Deployment (Manual)
