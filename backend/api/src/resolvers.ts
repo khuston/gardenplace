@@ -1,17 +1,16 @@
-import { GraphQLType } from "graphql";
 import { makeUserLoader } from "./userLoader";
-import { RootValue, ID, User, UserArgs } from "./types";
-import mysql from "mysql";
+import { RootValue, ID, User, UserArgs, CreateImageArgs } from "./types";
+import { DBPool } from "./db";
 
-export function makeRootValue(db: mysql.Connection): RootValue {
+export function makeRootValue(dbPool: DBPool): RootValue {
 
-    const userLoader = makeUserLoader(db);
+    const userLoader = makeUserLoader(dbPool);)
 
     return ({
         user: async (args: UserArgs) => {
             const { id } = args;
             return userLoader.load(id);
-        },
+        }
         /*gardensByOwner: async (args: UserArgs) => {
             const { id } = args;
             return getGardensByOwner(id);

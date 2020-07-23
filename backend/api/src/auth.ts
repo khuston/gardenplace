@@ -1,5 +1,6 @@
 import express from "express"
-import mysql from "mysql"
+import { DBPool } from "./db"
+import mysql from "mysql";
 import { ID } from "./types"
 
 interface RequestWithUserID extends express.Request {
@@ -16,7 +17,7 @@ const tokenCookieName = "Token";
 const maxInt32 = 2147483647;
 
 
-export function makeAuthHandler(db: mysql.Connection, secureCookies: boolean) {
+export function makeAuthHandler(dbPool: DBPool, secureCookies: boolean) {
 
     const prefix = getCookiePrefix(secureCookies)
     const emailCookie: string = prefix + emailCookieName
@@ -24,7 +25,7 @@ export function makeAuthHandler(db: mysql.Connection, secureCookies: boolean) {
 
     return handleAuth
 
-    async function handleAuth(request: express.Request, response: express.Response, next: () => void) {
+    async function handleAuth(request: express.Request, response: express.Response, next: express.NextFunction) {
 
         return new Promise<void>(async (resolve, reject) => {
             if (!(emailCookie in request.cookies)) {
@@ -41,14 +42,21 @@ export function makeAuthHandler(db: mysql.Connection, secureCookies: boolean) {
             const email: string = request.cookies[emailCookie];
             const token: ID = request.cookies[tokenCookie];
             try {
-                const [userID, sessionIDMatches] = await checkSessionToken(db, email, token);
-                (request as RequestWithUserID).userID = userID
-                for (const match of sessionIDMatches) {
-                    if (userID === match.userID) {
-                        (request as RequestWithUserID).sessionID = match.sessionID
-                        resolve()
-                        return next()
+                const db = await dbPool.getConnection();
+                try {
+                    const [userID, sessionIDMatches] = await checkSessionToken(db, email, token);
+
+                    (request as RequestWithUserID).userID = userID
+                    for (const match of sessionIDMatches) {
+                        if (userID === match.userID) {
+                            (request as RequestWithUserID).sessionID = match.sessionID
+                            resolve()
+                            return next()
+                        }
                     }
+                }
+                finally {
+                    db.release();
                 }
             } catch (error) {
                 if (error instanceof AuthenticationError) {
@@ -71,33 +79,41 @@ export function makeAuthHandler(db: mysql.Connection, secureCookies: boolean) {
     }
 }
 
-export function makeNonceHandler(db: mysql.Connection, secureCookies: boolean, sessionDuration: number) {
+export function makeNonceHandler(dbPool: DBPool, secureCookies: boolean, sessionDuration: number) {
 
     const prefix = getCookiePrefix(secureCookies)
     const nonceCookie: string = prefix + sessionNonceCookieName
 
     return handleNonce
 
-    async function handleNonce(request: express.Request, response: express.Response, next: () => void) {
+    async function handleNonce(request: express.Request, response: express.Response, next: express.NextFunction) {
 
         return new Promise<void>(async (resolve, reject) => {
             const nonce: ID = request.cookies[nonceCookie]
 
             try {
 
-                const correctNonce = await getSessionNonce(db, (request as RequestWithUserID).sessionID)
+                const db = await dbPool.getConnection();
+                try
+                {
 
-                if (nonce === correctNonce) {
-                    const newNonce = await incrementSessionNonce(db, (request as RequestWithUserID).sessionID)
+                    const correctNonce = await getSessionNonce(db, (request as RequestWithUserID).sessionID)
 
-                    setSessionNonce(response, newNonce, secureCookies, sessionDuration)
+                    if (nonce === correctNonce) {
+                        const newNonce = await incrementSessionNonce(db, (request as RequestWithUserID).sessionID)
 
-                    resolve()
+                        setSessionNonce(response, newNonce, secureCookies, sessionDuration)
 
-                    return next()
+                        resolve()
+
+                        return next()
+                    }
+
+                    setSessionNonce(response, correctNonce, secureCookies, sessionDuration)
                 }
-
-                setSessionNonce(response, correctNonce, secureCookies, sessionDuration)
+                finally {
+                    db.release()
+                }
 
             } catch(error) {
                 response.status(500).json({error: error.message}).send()

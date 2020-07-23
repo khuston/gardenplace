@@ -1,6 +1,7 @@
 import DataLoader from "dataloader";
-import mysql from "mysql";
+import { DBPool } from "./db";
 import { User, Garden, Plant, Post, GardenRelations, PlantRelations, ID } from "./types"
+import { LRUMap } from "lru_map"
 
 export interface UserData {
     id: string
@@ -8,9 +9,9 @@ export interface UserData {
     email: string
 }
 
-export function makeUserLoader(db: mysql.Connection): DataLoader<ID, User> {
+export function makeUserLoader(dbPool: DBPool): DataLoader<ID, User> {
 
-    const getUsers = makeUserGetter(db)
+    const getUsers = makeUserGetter(dbPool)
 
     return new DataLoader((IDs: ID[]) => new Promise<User[]>((resolve, reject) => {
         try {
@@ -18,17 +19,19 @@ export function makeUserLoader(db: mysql.Connection): DataLoader<ID, User> {
         } catch (error) {
             reject(error)
         }
-    }))
+    }), {cacheMap: new LRUMap(100)})
 }
 
 
-function makeUserGetter(db: mysql.Connection) {
+function makeUserGetter(dbPool: DBPool) {
 
     async function getUserData(IDs: ID[]) {
 
         const preparedSql = "SELECT * FROM users WHERE id = ?";
 
         const promises: Promise<User>[] = []
+
+        const db = await dbPool.getConnection()
 
         IDs.forEach((id) => {
             promises.push(new Promise<User>((resolve, reject) => {
@@ -50,7 +53,7 @@ function makeUserGetter(db: mysql.Connection) {
             }))
         })
 
-        return Promise.all(promises)
+        return Promise.all(promises).finally(db.release)
     }
 
     return getUserData

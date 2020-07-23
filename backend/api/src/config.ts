@@ -1,12 +1,13 @@
-import mysql from "mysql";
 import * as fs from "fs";
 
-interface Configuration {
+export interface Configuration {
     host: string
     user: string
     password: string
     allowedOrigins: string[]
     useTLS: boolean
+    port: number
+    s3Endpoint: string
 }
 
 function isValidConfiguration(config: any): boolean {
@@ -40,19 +41,6 @@ export function loadConfig() {
         throw new Error("Invalid configuration at " + configPath)
 
     return config
-}
-
-export function initDB(config: Configuration): mysql.Connection {
-    const conn = mysql.createConnection({
-        host: config.host,
-        user: config.user,
-        password: config.password,
-        database: "gardenplace"
-    });
-
-    conn.connect()
-
-    return conn
 }
 
 function readJsonSync(path: string): any {
