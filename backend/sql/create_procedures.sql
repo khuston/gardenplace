@@ -2,13 +2,12 @@ DELIMITER $$
 
 CREATE PROCEDURE CreateImageForPlant (plantID BIGINT, imageDesc VARCHAR(1000))
 BEGIN
+
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;  -- rollback any changes made in the transaction
         RESIGNAL;  -- raise again the sql exception to the caller
     END;
-    
-    START TRANSACTION;
 
     INSERT INTO images (uploaded, description) VALUES (NOW(), imageDesc);
 
@@ -18,7 +17,6 @@ BEGIN
     
     SELECT @imageID;
     
-    COMMIT;
 END$$
 
 DELIMITER ;
