@@ -1,15 +1,15 @@
-//@flow
-import React, { useState } from "react";
-import { loginUser, registerUser } from "./auth";
+import * as React from "react";
+import { useState } from "react";
+import { loginUser, registerUser, LoginPayload, RegistrationPayload } from "./auth";
 import { useHistory } from "react-router-dom";
-//$FlowFixMe
-import Config from 'Config';
-import styles from '../css/gardenplace.css'
+import { AxiosError } from "axios"
+import { PropsWithLoggedInSetter } from "../props";
+import * as styles from "../css/gardenplace.css"
 
-function Welcome(props: Object) {
+function Welcome(props: PropsWithLoggedInSetter) {
     const [registerPopup, setRegisterPopup] = useState(false)
 
-    const [fields, setFields] = useState({
+    const [fields, setFields] = useState<LoginPayload & RegistrationPayload>({
         email: "",
         password: "",
         passwordReentered: "",
@@ -18,7 +18,7 @@ function Welcome(props: Object) {
 
     const [disabled, setDisabled] = useState(false)
 
-    function handleFieldChange(event) {
+    function handleFieldChange(event: React.ChangeEvent<HTMLInputElement>) {
         setFields({
             ...fields,
             [event.target.name]: event.target.value
@@ -28,11 +28,11 @@ function Welcome(props: Object) {
     return (
         <div>
             <h1>Gardenplace</h1>
-            <div className="home-box">
-                <div className="home-image-pane">
-                    <img className="splash-image" src={Config.publicStaticDir + "/splash.jpg"}></img>
+            <div className={styles.homeBox}>
+                <div className={styles.homeImagePane}>
+                    <img className={styles.splashImage} src={gardenplaceConfiguration.publicStaticDir + "/splash.jpg"}></img>
                 </div>
-                <div className="home-user-pane">
+                <div className={styles.homeUserPane}>
                     <LoginBox isPopped={!registerPopup} popup={() => setRegisterPopup(false)} fields={fields} onChange={handleFieldChange} 
                         disabled={disabled} setDisabled={setDisabled} setLoggedIn={props.setLoggedIn} />
                     <RegisterBox isPopped={registerPopup} popup={() => setRegisterPopup(true)} fields={fields} onChange={handleFieldChange}
@@ -43,8 +43,26 @@ function Welcome(props: Object) {
     )
 }
 
+interface PoppableProp {
+    isPopped: boolean
+    popup: VoidFunction
+}
 
-function LoginBox(props) {
+interface PropWithDisabled {
+    disabled: boolean
+}
+
+interface PropWithDisabledSetter {
+    setDisabled: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+interface PropsWithAuthFields {
+    fields: LoginPayload & RegistrationPayload
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => void
+}
+
+
+function LoginBox(props: PropsWithLoggedInSetter & PoppableProp & PropWithDisabled & PropWithDisabledSetter & PropsWithAuthFields) {
     if (props.isPopped) {
         return <BigLoginBox {...props} />
     }
@@ -53,7 +71,7 @@ function LoginBox(props) {
     }
 }
 
-function RegisterBox(props) {
+function RegisterBox(props: PoppableProp & PropWithDisabled & PropWithDisabledSetter & PropsWithAuthFields) {
     if (props.isPopped) {
         return <FullRegisterBox {...props} />
     }
@@ -62,23 +80,23 @@ function RegisterBox(props) {
     }
 }
 
-function LittleLoginBox(props) {
+function LittleLoginBox(props: PoppableProp & PropWithDisabled) {
     return (
-        <div className="login-box">
+        <div className={styles.loginBox}>
             <button onClick={props.popup} disabled={props.disabled}>Log In</button>
         </div>
     )
 }
 
-function LittleRegisterBox(props) {
+function LittleRegisterBox(props: PoppableProp & PropWithDisabled) {
     return (
-        <div className="login-box">
+        <div className={styles.loginBox}>
             <button onClick={props.popup} disabled={props.disabled}>Sign Up</button>
         </div>
     )
 }
 
-function BigLoginBox(props) {
+function BigLoginBox(props: PropsWithLoggedInSetter & PoppableProp & PropWithDisabled & PropWithDisabledSetter & PropsWithAuthFields) {
     const history = useHistory();
 
     const [loginStatus, setLoginStatus] = useState("");
@@ -89,7 +107,7 @@ function BigLoginBox(props) {
         history.push("/");
     }
 
-    function handleLoginError(error) {
+    function handleLoginError(error: AxiosError) {
         if (error.response) {
             setLoginStatus(error.response.data);
         }
@@ -107,7 +125,7 @@ function BigLoginBox(props) {
         history.push("/verify_email")
     }
 
-    function handleSubmit(event) {
+    function handleSubmit(event: React.SyntheticEvent) {
         event.preventDefault();
 
         props.setDisabled(true)
@@ -121,20 +139,20 @@ function BigLoginBox(props) {
     }
 
     return (
-        <div className="login-box">
-            <form className="login-form" onSubmit={handleSubmit}>
-                <input className="login-input" type="email" name="email" placeholder="E-mail address"
+        <div className={styles.loginBox}>
+            <form className={styles.loginForm} onSubmit={handleSubmit}>
+                <input className={styles.loginInput} type="email" name="email" placeholder="E-mail address"
                     value={props.fields.email} onChange={props.onChange} disabled={props.disabled} required />
-                <input className="login-input" type="password" name="password" placeholder="Password"
+                <input className={styles.loginInput} type="password" name="password" placeholder="Password"
                     value={props.fields.password} onChange={props.onChange} disabled={props.disabled} required />
                 <button type="submit" disabled={props.disabled}>Log In</button>
             </form>
-            <LoginStatus loginStatus={loginStatus} />
+            <StatusMessage status={loginStatus} />
         </div>
     )
 }
 
-function FullRegisterBox(props) {
+function FullRegisterBox(props: PoppableProp & PropWithDisabled & PropWithDisabledSetter & PropsWithAuthFields) {
     const history = useHistory();
 
     const [registrationStatus, setRegistrationStatus] = useState("");
@@ -143,7 +161,7 @@ function FullRegisterBox(props) {
         history.push("/verify_email");
     }
 
-    function handleRegistrationError(error) {
+    function handleRegistrationError(error: AxiosError) {
         if (error.response) {
             setRegistrationStatus(error.response.data);
         }
@@ -157,7 +175,7 @@ function FullRegisterBox(props) {
         props.setDisabled(false)
     }
 
-    function handleSubmit(event) {
+    function handleSubmit(event: React.SyntheticEvent) {
         event.preventDefault();
 
         props.setDisabled(true)
@@ -171,34 +189,30 @@ function FullRegisterBox(props) {
     }
 
     return (
-        <div className="login-box">
-            <form className="login-form" onSubmit={handleSubmit}>
-                <input className="login-input" type="email" name="email" placeholder="E-mail address"
+        <div className={styles.loginBox}>
+            <form className={styles.loginForm} onSubmit={handleSubmit}>
+                <input className={styles.loginInput} type="email" name="email" placeholder="E-mail address"
                     value={props.fields.email} onChange={props.onChange} disabled={props.disabled} required />
-                <input className="login-input" type="password" name="password" placeholder="Password"
+                <input className={styles.loginInput} type="password" name="password" placeholder="Password"
                     value={props.fields.password} onChange={props.onChange} disabled={props.disabled} required />
-                <input className="login-input" type="password" name="passwordReentered" placeholder="Re-enter Password" 
+                <input className={styles.loginInput} type="password" name="passwordReentered" placeholder="Re-enter Password" 
                     value={props.fields.passwordReentered} onChange={props.onChange} disabled={props.disabled} required />
                 <button type="submit" disabled={props.disabled}>Sign Up</button>
             </form>
-            <RegistrationStatus registrationStatus={registrationStatus} />
+            <StatusMessage status={registrationStatus} />
         </div>
     )
 }
 
-function LoginStatus(props) {
-    let status_message = props.loginStatus
-
-    return (
-        <div className="login-status">{status_message}</div>
-    )
+interface PropsWithStatusMessage {
+    status: string
 }
 
-function RegistrationStatus(props) {
-    let status_message = props.registrationStatus
+function StatusMessage(props: PropsWithStatusMessage) {
+    let status_message = props.status
 
     return (
-        <div className="login-status">{status_message}</div>
+        <div className={styles.loginStatus}>{status_message}</div>
     )
 }
 

@@ -1,31 +1,33 @@
-//@flow
-import React, { useState, useEffect } from "react";
+import * as React from "react"
+import { useState, useEffect } from "react";
 import { verifyEmail } from "./auth";
 import { useHistory } from "react-router-dom";
-import styles from '../css/gardenplace.css'
+import { PropsWithLoggedIn } from "../props";
+import * as styles from "../css/gardenplace.css"
 
-export function VerifyEmail(props: Object) {
-
-    const [verificationCode, setVerificationCode] = useState(props.verificationCode)
+export function VerifyEmail(props: PropsWithLoggedIn & PropsWithVerificationCode) {
 
     let alreadySubmitted = !(props.verificationCode === undefined)
-    const [submitted, setSubmitted] = useState(alreadySubmitted)
+
+    const [verificationCode, setVerificationCode] = useState<string>(alreadySubmitted ? props.verificationCode : "")
+
+    const [submitted, setSubmitted] = useState<boolean>(alreadySubmitted)
 
     if (submitted) {
         return <VerificationWaitingPage verificationCode={verificationCode} />
     }
     else {
-        return <VerificationCodeEntry setVerificationCode={setVerificationCode} submit={() => setSubmitted(true)} />
+        return <VerificationCodeEntry verificationCode={verificationCode} setVerificationCode={setVerificationCode} submit={() => setSubmitted(true)} />
     }
 }
 
-function VerificationCodeEntry(props: Object) {
+function VerificationCodeEntry(props: PropsWithVerificationCode & PropsWithVerificationCodeSetter & PropsWithSubmit) {
     return (
         <div>
             <h1>Gardenplace</h1>
-            <form className="login-form" onSubmit={props.submit}>
+            <form className={styles.loginForm} onSubmit={props.submit}>
                 You must verify ownership of the e-mail address you provided. Check your inbox and enter the verification code.
-                <input className="login-input" type="text" name="verificationCode" placeholder="Verification Code"
+                <input className={styles.loginInput} type="text" name="verificationCode" placeholder="Verification Code"
                     value={props.verificationCode} onChange={(event) => {props.setVerificationCode(event.target.value)}} required />
                 <button type="submit">Submit</button>
             </form>
@@ -33,7 +35,7 @@ function VerificationCodeEntry(props: Object) {
     )
 }
 
-export function VerificationWaitingPage(props: Object) {
+export function VerificationWaitingPage(props: PropsWithVerificationCode) {
     const history = useHistory();
 
     const [message, setMessage] = useState("Verifying e-mail address...")
@@ -56,4 +58,16 @@ export function VerificationWaitingPage(props: Object) {
             <a href="#" onClick={() => history.push("/")}>{destination}</a>
         </div>
     )
+}
+
+interface PropsWithSubmit {
+    submit: VoidFunction
+}
+
+interface PropsWithVerificationCodeSetter {
+    setVerificationCode: React.Dispatch<React.SetStateAction<string>>
+}
+
+interface PropsWithVerificationCode {
+    verificationCode: string
 }

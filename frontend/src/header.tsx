@@ -1,11 +1,11 @@
-//@flow
-import React from "react";
+import * as React from "react";
 import { Link } from "react-router-dom";
 import { logoutUser } from "./auth/auth";
 import { useHistory } from "react-router-dom";
-import styles from "./css/gardenplace.css"
+import { PropsWithLoggedInSetter } from "./props";
+import * as styles from "./css/gardenplace.css"
 
-export function CommonHeader(props: Object) {
+export function CommonHeader(props: PropsWithLoggedInSetter) {
     return (
         <div>
             <h1>Gardenplace</h1>
@@ -14,10 +14,10 @@ export function CommonHeader(props: Object) {
     )
 }
 
-function Navbar(props) {
+function Navbar(props: PropsWithLoggedInSetter) {
     const history = useHistory()
 
-    function onClickLogout(event) {
+    function onClickLogout(event: React.SyntheticEvent) {
         logoutUser(() => { props.setLoggedIn(false) })
         history.push("/")
     }

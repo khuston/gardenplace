@@ -1,15 +1,13 @@
-//@flow
-import React from "react";
+import * as React from "react";
 import { Link } from "react-router-dom";
 import Welcome from "./auth/login";
 import { useLocation } from "react-router-dom";
 import { VerificationWaitingPage } from "./auth/verify_email";
-import { CommonHeader } from "./header.js"
-//$FlowFixMe
-import Config from 'Config';
-import styles from "./css/gardenplace.css"
+import { CommonHeader } from "./header"
+import { PropsWithLoggedIn, PropsWithLoggedInSetter } from "./props"
+import * as styles from "./css/gardenplace.css"
 
-function Home(props: Object) {
+function Home(props: PropsWithLoggedIn & PropsWithLoggedInSetter) {
 
     let verificationCode = (new URLSearchParams(useLocation().search)).get("verification_code")
 
@@ -24,7 +22,7 @@ function Home(props: Object) {
     }
 }
 
-function LoggedInHome(props: Object) {
+function LoggedInHome(props: PropsWithLoggedIn & PropsWithLoggedInSetter) {
     return (
         <div>
             <CommonHeader setLoggedIn={props.setLoggedIn}/>
@@ -36,30 +34,38 @@ function LoggedInHome(props: Object) {
     )    
 }
 
-function MyPlants(props) {
+interface Plant {
+    imageUrl: string
+}
+
+interface PropsWithMyPlants {
+    myPlants: Array<Plant>
+}
+
+function MyPlants(props: PropsWithMyPlants) {
 
     const myPlants = props.myPlants.map((plant) =>
-        <img className="my-plants-thumbnail"
+        <img className={styles.myPlantsThumbnail}
             key={plant.imageUrl} src={plant.imageUrl} />
         );
 
     return(
-        <div className="my-plants">
+        <div>
             <NewPlant />
             {myPlants}
         </div>
     )
 }
 
-function NewPlant(props) {
+function NewPlant(props: any) {
     return (
         <Link to="/new_plant">
-            <img className="my-plants-thumbnail" src={Config.publicStaticDir + "/add-plant.png"} />
+            <img className={styles.myPlantsThumbnail} src={gardenplaceConfiguration.publicStaticDir + "/add-plant.png"} />
         </Link>
     )
 }
 
-function RecentActivity(props) {
+function RecentActivity(props: any) {
     return(
         <div></div>
     )

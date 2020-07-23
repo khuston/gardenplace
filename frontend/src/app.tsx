@@ -1,24 +1,24 @@
-//@flow
-import React, { useState } from "react";
-import ReactDOM from "react-dom";
+import * as React from "react";
+import { useState } from "react";
+import * as ReactDOM from "react-dom";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Home from "./home";
 import About from "./about";
 import RegisterTwofactor from "./auth/register_twofactor";
-import { VerifyEmail } from "./auth/verify_email"
-import { NewPlant } from "./new_plant"
-import { checkLoggedIn } from "./auth/auth"
-//$FlowFixMe
-import Config from 'Config';
+import { VerifyEmail } from "./auth/verify_email";
+import { NewPlant } from "./newPlant";
+import { checkLoggedIn } from "./auth/auth";
 
+function App(props: any) {
+    // TODO: Rather than assuming we are not logged in, better to use some local storage,
+    // bearing in mind that the cookies are http-only.
+    const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
-function App(props: Object) {
-
-    const [loggedIn, setLoggedIn] = useState(checkLoggedIn());
+    checkLoggedIn(setLoggedIn)
 
     return (
-        <div className="app">
-            <BrowserRouter basename={Config.routerBasename}>
+        <div>
+            <BrowserRouter basename={gardenplaceConfiguration.routerBasename}>
                 <Switch>
                     <Route exact path={"/"} render={props => (
                         <Home {... props} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
@@ -29,7 +29,7 @@ function App(props: Object) {
                     )}
                     />
                     <Route exact path={"/verify_email"} render={props => (
-                        <VerifyEmail {... props} loggedIn={loggedIn} />
+                        <VerifyEmail {... props} loggedIn={loggedIn} verificationCode={undefined} />
                     )}
                     />
                     <Route exact path={"/new_plant"} render={props => (

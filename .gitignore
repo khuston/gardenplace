@@ -4,3 +4,5 @@ dist
 config.json
 *.exe
 __debug_*
+*.log
+*.css.d.*
