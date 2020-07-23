@@ -36,6 +36,10 @@ export const schema = buildSchema(`
         description: String!
     }
 
+    type PendingImage {
+        uploadUrl: String!
+    }
+
     type Post {
         author: User!
         firstPublished: DateTime!
@@ -70,8 +74,13 @@ export const schema = buildSchema(`
         user(id: ID!): User
     }
 
+    type MutationRoot {
+        createImageForPlant(plantID: ID!, fileExt: String!, description: String!): PendingImage!
+    }
+
     schema {
         query: QueryRoot
+        mutation: MutationRoot
         # query: Query
     }
 `);

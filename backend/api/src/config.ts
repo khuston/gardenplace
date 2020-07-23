@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import { Config } from "aws-sdk";
 
 export interface Configuration {
     host: string
@@ -8,6 +9,11 @@ export interface Configuration {
     useTLS: boolean
     port: number
     s3Endpoint: string
+    s3Bucket: string
+    s3KeyRootDir: string
+    s3AccessKeyId: string
+    s3SecretAccessKey: string
+    region: string
 }
 
 function isValidConfiguration(config: any): boolean {
@@ -17,7 +23,7 @@ function isValidConfiguration(config: any): boolean {
     return false
 }
 
-export function loadConfig() {
+export function loadConfig(): Configuration {
 
     const configPaths = ["/etc/gardenplace/backend/api/config.json", "backend/api/config.json"]
 

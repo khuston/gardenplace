@@ -7,6 +7,8 @@ import { makeRootValue } from "./resolvers"
 import { loadConfig } from "./config"
 import { initDBPool } from "./db"
 import { makeAuthHandler, makeNonceHandler, AuthenticationError } from "./auth"
+import { S3Params } from "./imageCreator"
+import AWS from "aws-sdk";
 
 // Future: Consider using express-cluster.
 
@@ -15,7 +17,22 @@ const config = loadConfig();
 
 const dbPool = initDBPool(config);
 
-const rootValue = makeRootValue(dbPool);
+const s3 = new AWS.S3({
+    endpoint: config.s3Endpoint,
+    apiVersion: "2006-03-01",
+    region: config.region,
+    credentials: {
+        accessKeyId: config.s3AccessKeyId,
+        secretAccessKey: config.s3SecretAccessKey,
+    }
+});
+
+const s3Params: S3Params = {
+    Bucket: config.s3Bucket,
+    KeyRootDir: config.s3KeyRootDir
+}
+
+const rootValue = makeRootValue(dbPool, s3, s3Params);
 
 const corsOptions = {
     origin: config.allowedOrigins,

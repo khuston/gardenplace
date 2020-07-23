@@ -2,6 +2,7 @@ export type ID = string;
 
 export interface RootValue {
     user: (args: UserArgs) => Promise<User>;
+    createImageForPlant: (args: CreateImageArgs) => Promise<PendingImage>;
     // gardensByOwner: (id: ID) => Promise<Garden[]>;
     // gardensByGardener: (id: ID) => Promise<Garden[]>;
     // plantsByOwner: (id: ID) => Promise<Plant[]]>;
@@ -43,6 +44,10 @@ export interface Image {
     description: string
 }
 
+export interface PendingImage {
+    uploadUrl: string
+}
+
 export interface Post {
     author: User
     firstPublished: Date
@@ -78,6 +83,13 @@ export interface DBUser {
     name: string
     email: string
 }
+
 export interface UserArgs {
     id: ID
+}
+
+export interface CreateImageArgs {
+    plantID: ID
+    fileExt: string
+    description: string
 }
