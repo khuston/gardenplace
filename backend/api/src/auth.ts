@@ -1,14 +1,14 @@
 import express from "express"
 import { DBPool } from "./db"
 import mysql from "mysql";
-import { ID } from "./types"
+import { ID } from "./data/primitives"
 
 interface RequestWithUserID extends express.Request {
     userID: ID
     sessionID: ID
 };
 
-export class AuthenticationError extends Error {};
+class AuthenticationError extends Error {};
 
 const sessionNonceCookieName = "SessionNonce";
 const emailCookieName = "Email";
