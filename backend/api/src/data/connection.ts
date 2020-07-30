@@ -1,4 +1,5 @@
 import { ID } from "./primitives"
+import { IDable } from "./types"
 
 // For GraphQL pagination best practices using the Connection fragment, see
 // https://graphql.org/learn/pagination/ and https://relay.dev/graphql/connections.htm
@@ -21,7 +22,7 @@ export interface Connection<Parent, Child> {
     __totalCountSqlArgs: (number | string | null)[]
     totalCount: (obj: Connection<Parent, Child>, args: any, context: any, info: any) => Promise<number>
     edges: Edges<Parent, Child>
-    pageInfo: PageInfo
+    pageInfo?: PageInfo
 }
 
 export type Edges<Parent, Child> = Edge<Parent, Child>[]
@@ -33,8 +34,10 @@ export interface EdgeData {
 }
 
 export interface Edge<Parent, Child> extends EdgeData {
-    node: (obj: Edge<Parent, Child>, args: any, context: any, info: any) => Promise<Child>
+    node: Node<Parent, Child>
 }
+
+export type Node<Parent, Child> = (obj: IDable, args: any, context: any, info: any) => Promise<Child>
 
 export interface PageInfo {
     hasPreviousPage: boolean
@@ -53,13 +56,13 @@ export interface ConnectionArgs {
 // ConnectionData holds the results of the database query before adding resolvers to complete Connection interface.
 export interface ConnectionData {
     edgesData: EdgesData
-    pageInfo: PageInfo
+    pageInfo?: PageInfo
 }
 
 export function encryptCursor(id: ID): Cursor {
-    return Buffer.from(id, 'utf8').toString()
+    return Buffer.from(id, 'binary').toString('base64')
 }
 
 export function decryptCursor(cursor: Cursor): ID {
-    return Buffer.from(cursor, 'base64').toString()
+    return Buffer.from(cursor, 'base64').toString('binary')
 }

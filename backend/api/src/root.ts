@@ -8,6 +8,8 @@ export function makeRootValue(load: MasterLoader, imageCreator: ImageCreator): R
     return ({
         user: load.user,
         plant: load.plant,
+        garden: load.garden,
+        post: load.post,
         createImageForPlant: imageCreator.createForPlant
 
     })

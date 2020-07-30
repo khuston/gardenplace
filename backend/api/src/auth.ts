@@ -42,22 +42,24 @@ export function makeAuthHandler(dbPool: DBPool, secureCookies: boolean) {
             const email: string = request.cookies[emailCookie];
             const token: ID = request.cookies[tokenCookie];
             try {
-                const db = await dbPool.getConnection();
-                try {
+                const isLoggedIn = await dbPool.withDB(async (db) => {
                     const [userID, sessionIDMatches] = await checkSessionToken(db, email, token);
 
                     (request as RequestWithUserID).userID = userID
                     for (const match of sessionIDMatches) {
                         if (userID === match.userID) {
                             (request as RequestWithUserID).sessionID = match.sessionID
-                            resolve()
-                            return next()
+                            return true
                         }
                     }
+                    return false
+                })
+
+                if (isLoggedIn === true) {
+                    resolve()
+                    return next()
                 }
-                finally {
-                    db.release();
-                }
+
             } catch (error) {
                 if (error instanceof AuthenticationError) {
                     response.status(403)
@@ -93,10 +95,7 @@ export function makeNonceHandler(dbPool: DBPool, secureCookies: boolean, session
 
             try {
 
-                const db = await dbPool.getConnection();
-                try
-                {
-
+                const isNonceCorrect = await dbPool.withDB(async (db) => {
                     const correctNonce = await getSessionNonce(db, (request as RequestWithUserID).sessionID)
 
                     if (nonce === correctNonce) {
@@ -104,15 +103,17 @@ export function makeNonceHandler(dbPool: DBPool, secureCookies: boolean, session
 
                         setSessionNonce(response, newNonce, secureCookies, sessionDuration)
 
-                        resolve()
-
-                        return next()
+                        return true
                     }
 
                     setSessionNonce(response, correctNonce, secureCookies, sessionDuration)
-                }
-                finally {
-                    db.release()
+
+                    return false
+                });
+
+                if (isNonceCorrect === true) {
+                    resolve()
+                    return next()
                 }
 
             } catch(error) {

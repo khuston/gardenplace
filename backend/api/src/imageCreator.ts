@@ -31,9 +31,9 @@ export function makeImageCreator(dbPool: DBPool, s3: S3, s3Params: S3Params): Im
                 let fileID = "";
 
                 try {
-                    const db = await dbPool.getConnection();
-                    fileID = await createImageForPlant(db, plantID, description)
-                    db.release()
+                    fileID = await dbPool.withDB((db) => {
+                        return createImageForPlant(db, plantID, description)
+                    })
                 }
                 catch (error) {
                     reject(error)

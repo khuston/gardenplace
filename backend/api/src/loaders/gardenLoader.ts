@@ -1,40 +1,39 @@
 import { ID } from "../data/primitives"
-import { IDable, getID, Plant, PlantData, Garden } from "../data/types"
+import { IDable, getID, Garden, GardenData } from "../data/types"
 import { DBPool } from "../db"
 import { stubConnection } from "./stubs"
 import { ContextWithLoaders } from "./types"
 import DataLoader from "dataloader"
 
 
-export function makePlantLoader(dbPool: DBPool) {
+export function makeGardenLoader(dbPool: DBPool) {
 
-    const plantDataLoader = new DataLoader<ID, PlantData>(getPlantData);
+    const gardenDataLoader = new DataLoader<ID, GardenData>(getGardenData);
 
-    async function loadPlant(obj: IDable, args: any, context: ContextWithLoaders, info: any): Promise<Plant> {
+    async function loadGarden(obj: IDable, args: any, context: ContextWithLoaders, info: any): Promise<Garden> {
         const id = getID(obj, args)
 
-        const plantData = await plantDataLoader.load(id)
+        const gardenData = await gardenDataLoader.load(id)
 
         return ({
+            plantConnection: context.load.gardenPlantConnection,
+            gardenerConnection: context.load.gardenUserConnection,
+            ownerConnection: context.load.gardenOwnerConnection,
             imageConnection: stubConnection,
-            ownerConnection: context.load.plantOwnerConnection,
-            garden: (plant: Plant): Promise<Garden> => {
-                return context.load.garden(plant, {id: plant.__gardenID}, null, null)
-            },
-            ...plantData
+            ...gardenData
         })
     }
 
-    async function getPlantData(IDs: ID[]) {
+    async function getGardenData(IDs: ID[]) {
 
-        const preparedSql = "SELECT * FROM plants WHERE id = ?";
+        const preparedSql = "SELECT * FROM gardens WHERE id = ?";
 
         // TODO: Combine into a single SQL query and check result IDs against requested IDs
         //       to resolve/reject promises.
 
         return dbPool.withDB((db) => {
-            const promises: Promise<PlantData>[] = IDs.map((id) =>
-                new Promise<PlantData>((resolve, reject) => {
+            const promises: Promise<GardenData>[] = IDs.map((id) =>
+                new Promise<GardenData>((resolve, reject) => {
                     const inserts = [BigInt(id)];
 
                     db.query(preparedSql, inserts, (err, rows) => {
@@ -46,7 +45,6 @@ export function makePlantLoader(dbPool: DBPool) {
                         return resolve({
                             id,
                             name: rows[0].name,
-                            __gardenID: rows[0].garden_id
                         });
                     });
                 })
@@ -55,5 +53,5 @@ export function makePlantLoader(dbPool: DBPool) {
         })
     }
 
-    return loadPlant
+    return loadGarden
 }

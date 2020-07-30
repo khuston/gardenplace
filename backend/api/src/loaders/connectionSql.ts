@@ -7,8 +7,15 @@ export interface PageKey extends ConnectionArgs {
 }
 
 export function getPageCacheKey(key: PageKey) {
+    if (isEmptyKey(key))
+        return key.id
+
     return key.id + "|" + (key.next ? key.next.toString() + (key.after ? "|" + key.after.toString() : "") :
-                                      key.previous.toString() + (key.before ? "|" + key.before.toString() : ""))
+                            key.previous.toString() + (key.before ? "|" + key.before.toString() : ""))
+}
+
+function isEmptyKey(key: PageKey) {
+    return (!key.next && !key.previous)
 }
 
 /**
@@ -24,8 +31,12 @@ export function getPageCacheKey(key: PageKey) {
  *      next: 5  after: Mw==
  *          SELECT plant_id FROM plant_owners WHERE user_id = 1 AND plant_id > 3 ORDER BY plant_id ASC LIMIT 5
  */
-export function getConnectionDataPromise(key: PageKey, db: mysql.PoolConnection, preparedSql: string, idName: string) {
+export function getConnectionDataPromise(key: PageKey, db: mysql.Connection, preparedSql: string, idName: string) {
     return new Promise<ConnectionData>((resolve, reject) => {
+
+        if (isEmptyKey(key)) {
+            return reject(new Error("Must provide either next or previous arguments to connection"))
+        }
 
         const isForward = !!key.next;
         const length = isForward? key.next : key.previous;
@@ -50,28 +61,33 @@ export function getConnectionDataPromise(key: PageKey, db: mysql.PoolConnection,
             if (err)
                 return reject(err)
 
-            let edgesData: EdgesData = rows.map((row: any) => ({
-                __id: row[idName].toString(),
-                cursor: encryptCursor(row[idName].toString())
-            }))
+            try {
+                let edgesData: EdgesData = rows.map((row: any) => ({
+                    __id: row[idName].toString(),
+                    cursor: encryptCursor(row[idName].toString())
+                }))
 
-            if (!isForward) {
-                edgesData = edgesData.reverse()
-            }
-
-            if (edgesData.length > length) {
-                edgesData = edgesData.slice(0, length)
-            }
-
-            return resolve({
-                edgesData,
-                pageInfo: {
-                    hasPreviousPage: key.next ? key.after !== "" : rows.length > length,
-                    hasNextPage: key.previous ? key.before !== "" : rows.length > length,
-                    startCursor: edgesData[0].cursor,
-                    endCursor: edgesData[edgesData.length - 1].cursor
+                if (!isForward) {
+                    edgesData = edgesData.reverse()
                 }
-            });
+
+                if (edgesData.length > length) {
+                    edgesData = edgesData.slice(0, length)
+                }
+
+                return resolve({
+                    edgesData,
+                    pageInfo: (edgesData.length > 0) ? {
+                        hasPreviousPage: key.next ? key.after !== "" : rows.length > length,
+                        hasNextPage: key.previous ? key.before !== "" : rows.length > length,
+                        startCursor: edgesData[0].cursor,
+                        endCursor: edgesData[edgesData.length - 1].cursor
+                    } : undefined
+                });
+            }
+            catch (error) {
+                reject(error)
+            }
         }
     })
 }

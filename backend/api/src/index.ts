@@ -46,7 +46,10 @@ const nonceHandler = makeNonceHandler(dbPool, config.useTLS, 100000000)
 
 const graphqlHandler = graphqlHTTP(async () => {
 
-    const load = makeMasterLoader(dbPool) // Cache lifetime is 1 request.
+     // This arrow function is called once per request.
+
+    // Cache lifetime is 1 request.
+    const load = makeMasterLoader(dbPool)
 
     // Override the default field resolver, which omits `source` from arguments.
     function fieldResolver(source: any, args: any, contextValue: any, info: any) {
@@ -61,7 +64,7 @@ const graphqlHandler = graphqlHTTP(async () => {
         }
     };
 
-    return { // This arrow function is called once per request to reconfigure the graphQL handler.
+    return {
         schema,
         rootValue: makeRootValue(load, imageCreator),
         context: {

@@ -2,12 +2,13 @@ import mysql from "mysql";
 import { Configuration } from "./config";
 
 export interface DBPool {
-    getConnection(): Promise<mysql.PoolConnection>
+    withDB<T>(callback: (db: mysql.Connection) => Promise<T>): Promise<T>
 }
 
 export function initDBPool(config: Configuration): DBPool {
 
     const pool = mysql.createPool({
+        connectionLimit : 10,
         host: config.host,
         user: config.user,
         password: config.password,
@@ -16,13 +17,25 @@ export function initDBPool(config: Configuration): DBPool {
     });
 
     return {
-        getConnection: () => {
-            return new Promise<mysql.PoolConnection>((resolve, reject) => {
-                pool.getConnection((err, connection) => {
+        withDB<T>(callback: (db: mysql.Connection) => Promise<T>): Promise<T> {
+            return new Promise<T> ((resolve, reject) => {
+                pool.getConnection(async (err, connection) => {
                     if (err)
                         return reject(err);
 
-                    return resolve(connection);
+                    try {
+                        try {
+                            const result = await callback(connection)
+
+                            return resolve(result);
+                        }
+                        catch (error) {
+                            return reject(error)
+                        }
+                    }
+                    finally {
+                        connection.release()
+                    }
                 })
             })
         }

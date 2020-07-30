@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import { Config } from "aws-sdk";
 
 export interface Configuration {
     host: string

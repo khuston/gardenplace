@@ -8,27 +8,27 @@ export const schema = buildSchema(`
         id: ID!
         name: String
         email: String!
-        gardenConnection: GardenConnection!
-        ownedGardenConnection: GardenConnection!
+        gardenConnection(next: Int, previous: Int, after: ID, before: ID): GardenConnection!
+        ownedGardenConnection(next: Int, previous: Int, after: ID, before: ID): GardenConnection!
         plantConnection(next: Int, previous: Int, after: ID, before: ID): PlantConnection!
-        followeeConnection: UserConnection!
-        followerConnection: UserConnection!
-        postConnection: PostConnection!
+        followeeConnection(next: Int, previous: Int, after: ID, before: ID): UserConnection!
+        followerConnection(next: Int, previous: Int, after: ID, before: ID): UserConnection!
+        postConnection(next: Int, previous: Int, after: ID, before: ID): PostConnection!
     }
 
     type Garden {
         name: String!
-        plantConnection: PlantConnection!
-        gardenerConnection: UserConnection!
-        ownerConnection: UserConnection!
-        imageConnection: ImageConnection!
+        plantConnection(next: Int, previous: Int, after: ID, before: ID): PlantConnection!
+        gardenerConnection(next: Int, previous: Int, after: ID, before: ID): UserConnection!
+        ownerConnection(next: Int, previous: Int, after: ID, before: ID): UserConnection!
+        imageConnection(next: Int, previous: Int, after: ID, before: ID): ImageConnection!
     }
 
     type Plant {
         id: ID!
         name: String!
         garden: Garden
-        imageConnection: ImageConnection!
+        imageConnection(next: Int, previous: Int, after: ID, before: ID): ImageConnection!
     }
 
     type Post {
@@ -36,7 +36,7 @@ export const schema = buildSchema(`
         firstPublished: DateTime!
         lastEdited: DateTime
         text: String!
-        imageConnection: ImageConnection!
+        imageConnection(next: Int, previous: Int, after: ID, before: ID): ImageConnection!
     }
 
     type Image {
@@ -52,31 +52,31 @@ export const schema = buildSchema(`
     type UserConnection {
         totalCount: Int!
         edges: [UserEdge]!
-        pageInfo: PageInfo!
+        pageInfo: PageInfo
     }
 
     type GardenConnection {
         totalCount: Int!
         edges: [GardenEdge]!
-        pageInfo: PageInfo!
+        pageInfo: PageInfo
     }
 
     type PlantConnection {
         totalCount: Int!
         edges: [PlantEdge]!
-        pageInfo: PageInfo!
+        pageInfo: PageInfo
     }
 
     type PostConnection {
         totalCount: Int!
         edges: [PostEdge]!
-        pageInfo: PageInfo!
+        pageInfo: PageInfo
     }
 
     type ImageConnection {
         totalCount: Int!
         edges: [ImageEdge]!
-        pageInfo: PageInfo!
+        pageInfo: PageInfo
     }
 
     type UserEdge {
