@@ -1,10 +1,11 @@
-import { ID, PendingImage } from "./types";
+import { ID } from "./data/primitives"
+import { Mutation, PendingImage } from "./data/types";
 import { S3 } from "aws-sdk";
 import { DBPool } from "./db";
 import mysql from "mysql";
 
 export interface ImageCreator{
-    createForPlant(plantID: ID, fileExt: string, description: string): Promise<PendingImage>
+    createForPlant(obj: Mutation, args: CreatePlantArgs, context: any, info: any): Promise<PendingImage>
 }
 
 export interface S3Params{
@@ -12,19 +13,27 @@ export interface S3Params{
     KeyRootDir: string
 }
 
+interface CreatePlantArgs {
+    plantID: ID
+    fileExt: string
+    description: string
+}
+
 export function makeImageCreator(dbPool: DBPool, s3: S3, s3Params: S3Params): ImageCreator {
 
     return ({
-        createForPlant: (plantID: ID, fileExt: string, description: string) => {
+        createForPlant: (obj: Mutation, args: CreatePlantArgs, context: any, info: any) => {
+
+            const { plantID, fileExt, description } = args;
 
             return new Promise<PendingImage>(async (resolve, reject) => {
 
                 let fileID = "";
 
                 try {
-                    const db = await dbPool.getConnection();
-                    fileID = await createImageForPlant(db, plantID, description)
-                    db.release()
+                    fileID = await dbPool.withDB((db) => {
+                        return createImageForPlant(db, plantID, description)
+                    })
                 }
                 catch (error) {
                     reject(error)
