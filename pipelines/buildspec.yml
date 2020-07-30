@@ -38,7 +38,7 @@ phases:
           \"SMTPPassword\": \""$MAIL_PASSWORD"\",
           \"SMTPFrom\": \"no-reply@www.showandtell.page\",
           \"SMTPFromName\": \"Gardenplace Registration\",
-          \"VerifyEndpoint\": \"https://www.showandtell.page/gardenplace"
+          \"VerifyEndpoint\": \"https://www.showandtell.page/gardenplace\"
         }" > config.json
     finally:
       - echo $(ls)
