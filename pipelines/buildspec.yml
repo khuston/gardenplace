@@ -39,38 +39,36 @@ phases:
       - cd backend/api
       - yarn build
       - cd ../..
-      - function replaceConfig { sed -i 's/{'$1'}/'${!1}'/' config.json; }
     finally:
       - echo $(ls)
   post_build:
     commands:
       - echo Creating config.json for authService...
-      - function replaceConfig { sed -i 's/{'$1'}/'${!1}'/' config.json; }
       - cd backend/authService
       - cp configTemplate.json config.json
-      - replaceConfig DB_USERNAME
-      - replaceConfig DB_PASSWORD
-      - replaceConfig DB_HOST
-      - replaceConfig DB_PORT
-      - replaceConfig MAIL_ENDPOINT
-      - replaceConfig MAIL_USERNAME
-      - replaceConfig MAIL_PASSWORD
+      - sed -i 's/{DB_USERNAME}/'$DB_USERNAME'/' config.json
+      - sed -i 's/{DB_PASSWORD}/'$DB_PASSWORD'/' config.json
+      - sed -i 's/{DB_HOST}/'$DB_HOST'/' config.json
+      - sed -i 's/{DB_PORT}/'$DB_PORT'/' config.json
+      - sed -i 's/{MAIL_ENDPOINT}/'$MAIL_ENDPOINT'/' config.json
+      - sed -i 's/{MAIL_USERNAME}/'$MAIL_USERNAME'/' config.json
+      - sed -i 's/{MAIL_PASSWORD}/'$MAIL_PASSWORD'/' config.json
       - cd ../..
       - echo Creating config.json for api...
       - cd backend/api
       - cp configTemplate.json config.json
-      - replaceConfig DB_USERNAME
-      - replaceConfig DB_PASSWORD
-      - replaceConfig DB_HOST
-      - replaceConfig DB_PORT
-      - replaceConfig MAIL_ENDPOINT
-      - replaceConfig MAIL_USERNAME
-      - replaceConfig MAIL_PASSWORD
-      - replaceConfig S3_ENDPOINT
-      - replaceConfig S3_BUCKET
-      - replaceConfig S3_KEY_ROOT_DIR
-      - replaceConfig S3_ACCESS_KEY_ID
-      - replaceConfig S3_SECRET_ACCESS_KEY
+      - sed -i 's/{DB_USERNAME}/'$DB_USERNAME'/' config.json
+      - sed -i 's/{DB_PASSWORD}/'$DB_PASSWORD'/' config.json
+      - sed -i 's/{DB_HOST}/'$DB_HOST'/' config.json
+      - sed -i 's/{DB_PORT}/'$DB_PORT'/' config.json
+      - sed -i 's/{MAIL_ENDPOINT}/'$MAIL_ENDPOINT'/' config.json
+      - sed -i 's/{MAIL_USERNAME}/'$MAIL_USERNAME'/' config.json
+      - sed -i 's/{MAIL_PASSWORD}/'$MAIL_PASSWORD'/' config.json
+      - sed -i 's/{S3_ENDPOINT}/'$S3_ENDPOINT'/' config.json
+      - sed -i 's/{S3_BUCKET}/'$S3_BUCKET'/' config.json
+      - sed -i 's/{S3_KEY_ROOT_DIR}/'$S3_KEY_ROOT_DIR'/' config.json
+      - sed -i 's/{S3_ACCESS_KEY_ID}/'$S3_ACCESS_KEY_ID'/' config.json
+      - sed -i 's/{S3_SECRET_ACCESS_KEY}/'$S3_SECRET_ACCESS_KEY'/' config.json
     finally:
       - echo $(ls)
       - cd
@@ -79,5 +77,8 @@ artifacts:
     - backend/authService/authService
     - backend/authService/config.json
     - backend/api/config.json
+    - backend/api/package.json
+    - backend/api/yarn.lock
+    - backend/api/dist
     - appspec.yml
     - scripts/*
