@@ -9,5 +9,5 @@
     "SMTPFrom": "no-reply@www.showandtell.page",
     "SMTPFromName": "Gardenplace Registration",
     "SMTPReturnPath": "admin@showandtell.page",
-    "VerifyEndpoint": "https://www.showandtell.page/gardenplace"
+    "VerifyEndpoint": "https://www.showandtell.page/gardenplace/"
 }
