@@ -46,29 +46,16 @@ phases:
       - echo Creating config.json for authService...
       - cd backend/authService
       - cp configTemplate.json config.json
-      - sed -i 's/{DB_USERNAME}/'$DB_USERNAME'/' config.json
-      - sed -i 's/{DB_PASSWORD}/'$DB_PASSWORD'/' config.json
-      - sed -i 's/{DB_HOST}/'$DB_HOST'/' config.json
-      - sed -i 's/{DB_PORT}/'$DB_PORT'/' config.json
-      - sed -i 's/{MAIL_ENDPOINT}/'$MAIL_ENDPOINT'/' config.json
-      - sed -i 's/{MAIL_USERNAME}/'$MAIL_USERNAME'/' config.json
-      - sed -i 's/{MAIL_PASSWORD}/'$MAIL_PASSWORD'/' config.json
+      - sed -i -e 's/{DB_USERNAME}/'$DB_USERNAME'/' -e 's/{DB_PASSWORD}/'$DB_PASSWORD'/' -e 's/{DB_HOST}/'$DB_HOST'/' -e 's/{DB_PORT}/'$DB_PORT'/' config.json
+      - sed -i -e 's/{MAIL_ENDPOINT}/'$MAIL_ENDPOINT'/' -e 's/{MAIL_USERNAME}/'$MAIL_USERNAME'/' -e 's/{MAIL_PASSWORD}/'$MAIL_PASSWORD'/' -e 's/{DB_PORT}/'$DB_PORT'/' config.json
       - cd ../..
       - echo Creating config.json for api...
       - cd backend/api
       - cp configTemplate.json config.json
-      - sed -i 's/{DB_USERNAME}/'$DB_USERNAME'/' config.json
-      - sed -i 's/{DB_PASSWORD}/'$DB_PASSWORD'/' config.json
-      - sed -i 's/{DB_HOST}/'$DB_HOST'/' config.json
-      - sed -i 's/{DB_PORT}/'$DB_PORT'/' config.json
-      - sed -i 's/{MAIL_ENDPOINT}/'$MAIL_ENDPOINT'/' config.json
-      - sed -i 's/{MAIL_USERNAME}/'$MAIL_USERNAME'/' config.json
-      - sed -i 's/{MAIL_PASSWORD}/'$MAIL_PASSWORD'/' config.json
-      - sed -i 's/{S3_ENDPOINT}/'$S3_ENDPOINT'/' config.json
-      - sed -i 's/{S3_BUCKET}/'$S3_BUCKET'/' config.json
-      - sed -i 's/{S3_KEY_ROOT_DIR}/'$S3_KEY_ROOT_DIR'/' config.json
-      - sed -i 's/{S3_ACCESS_KEY_ID}/'$S3_ACCESS_KEY_ID'/' config.json
-      - sed -i 's/{S3_SECRET_ACCESS_KEY}/'$S3_SECRET_ACCESS_KEY'/' config.json
+      - sed -i -e 's/{DB_USERNAME}/'$DB_USERNAME'/' -e 's/{DB_PASSWORD}/'$DB_PASSWORD'/' -e 's/{DB_HOST}/'$DB_HOST'/' -e 's/{DB_PORT}/'$DB_PORT'/' config.json
+      - sed -i -e 's/{MAIL_ENDPOINT}/'$MAIL_ENDPOINT'/' -e 's/{MAIL_USERNAME}/'$MAIL_USERNAME'/' -e 's/{MAIL_PASSWORD}/'$MAIL_PASSWORD'/' -e 's/{DB_PORT}/'$DB_PORT'/' config.json
+      - sed -i -e 's/{S3_ENDPOINT}/'$S3_ENDPOINT'/' -e 's/{S3_BUCKET}/'$S3_BUCKET'/' -e 's/{S3_KEY_ROOT_DIR}/'$S3_KEY_ROOT_DIR'/' config.json
+      - sed -i -e 's/{S3_ACCESS_KEY_ID}/'$S3_ACCESS_KEY_ID'/' -e 's/{S3_SECRET_ACCESS_KEY}/'$S3_SECRET_ACCESS_KEY'/' config.json
     finally:
       - echo $(ls)
       - cd
