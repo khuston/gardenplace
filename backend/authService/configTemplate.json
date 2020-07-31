@@ -1,0 +1,12 @@
+{
+    "UserDBConnectionString": "{DB_USERNAME}:{DB_PASSWORD}@tcp({DB_HOST}:{DB_PORT})/gardenplace",
+    "UseTLS": true,
+    "Port": 9001,
+    "AllowedOrigins": ["https://www.showandtell.page"],
+    "SMTPEndpoint": "{MAIL_ENDPOINT}",
+    "SMTPUsername": "{MAIL_USERNAME}",
+    "SMTPPassword": "{MAIL_PASSWORD}",
+    "SMTPFrom": "no-reply@www.showandtell.page",
+    "SMTPFromName": "Gardenplace Registration",
+    "VerifyEndpoint": "https://www.showandtell.page/gardenplace"
+}

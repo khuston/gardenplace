@@ -4,42 +4,71 @@ run-as: root
 
 env:
   shell: bash
+  variables:
+    AWS_REGION: us-east-2
   secrets-manager:
     DB_USERNAME: gardenplace-db-credentials:username
     DB_PASSWORD: gardenplace-db-credentials:password
     DB_HOST: gardenplace-db-credentials:host
     DB_PORT: gardenplace-db-credentials:port
+    MAIL_ENDPOINT: gardenplace-mail:Endpoint
     MAIL_USERNAME: gardenplace-mail:Username
     MAIL_PASSWORD: gardenplace-mail:Password
-    MAIL_ENDPOINT: gardenplace-mail:Endpoint
-
+    S3_ENDPOINT: gardenplace-s3-credentials:endpoint
+    S3_BUCKET: gardenplace-s3-credentials:bucket
+    S3_KEY_ROOT_DIR: gardenplace-s3-credentials:key-root-dir
+    S3_ACCESS_KEY_ID: gardenplace-s3-credentials:access-key-id
+    S3_SECRET_ACCESS_KEY: gardenplace-s3-credentials:secret-access-key
 phases:
   install:
     runtime-versions:
       golang: latest
       nodejs: latest
+    commands:
+      - echo Installing api dependencies...
+      - cd backend/api
+      - yarn install
+      - cd ../..
   build:
     commands:
+      - echo Building authService...
       - cd backend/authService
       - go build
+      - cd ../..
+      - echo Building api...
+      - cd backend/api
+      - yarn build
+      - cd ../..
     finally:
       - echo $(ls)
   post_build:
     commands:
-      - |
-        echo "
-        {
-          \"UserDBConnectionString\": \""$DB_USERNAME":"$DB_PASSWORD"@tcp("$DB_HOST":"$DB_PORT")/gardenplace\",
-          \"UseTLS\": true,
-          \"Port\": 9001,
-          \"AllowedOrigins\": [\"https://www.showandtell.page\"],
-          \"SMTPEndpoint\": \""$MAIL_ENDPOINT"\",
-          \"SMTPUsername\": \""$MAIL_USERNAME"\",
-          \"SMTPPassword\": \""$MAIL_PASSWORD"\",
-          \"SMTPFrom\": \"no-reply@www.showandtell.page\",
-          \"SMTPFromName\": \"Gardenplace Registration\",
-          \"VerifyEndpoint\": \"https://www.showandtell.page/gardenplace\"
-        }" > config.json
+      - echo Creating config.json for authService...
+      - cd backend/authService
+      - cp configTemplate.json config.json
+      - sed -i 's|{DB_USERNAME}|'$DB_USERNAME'|' config.json
+      - sed -i 's|{DB_PASSWORD}|'$DB_PASSWORD'|' config.json
+      - sed -i 's|{DB_HOST}|'$DB_HOST'|' config.json
+      - sed -i 's|{DB_PORT}|'$DB_PORT'|' config.json
+      - sed -i 's|{MAIL_ENDPOINT}|'$MAIL_ENDPOINT'|' config.json
+      - sed -i 's|{MAIL_USERNAME}|'$MAIL_USERNAME'|' config.json
+      - sed -i 's|{MAIL_PASSWORD}|'$MAIL_PASSWORD'|' config.json
+      - cd ../..
+      - echo Creating config.json for api...
+      - cd backend/api
+      - cp configTemplate.json config.json
+      - sed -i 's|{DB_USERNAME}|'$DB_USERNAME'|' config.json
+      - sed -i 's|{DB_PASSWORD}|'$DB_PASSWORD'|' config.json
+      - sed -i 's|{DB_HOST}|'$DB_HOST'|' config.json
+      - sed -i 's|{DB_PORT}|'$DB_PORT'|' config.json
+      - sed -i 's|{MAIL_ENDPOINT}|'$MAIL_ENDPOINT'|' config.json
+      - sed -i 's|{MAIL_USERNAME}|'$MAIL_USERNAME'|' config.json
+      - sed -i 's|{MAIL_PASSWORD}|'$MAIL_PASSWORD'|' config.json
+      - sed -i 's|{S3_ENDPOINT}|'$S3_ENDPOINT'|' config.json
+      - sed -i 's|{S3_BUCKET}|'$S3_BUCKET'|' config.json
+      - sed -i 's|{S3_KEY_ROOT_DIR}|'$S3_KEY_ROOT_DIR'|' config.json
+      - sed -i 's|{S3_ACCESS_KEY_ID}|'$S3_ACCESS_KEY_ID'|' config.json
+      - sed -i 's|{S3_SECRET_ACCESS_KEY}|'$S3_SECRET_ACCESS_KEY'|' config.json
     finally:
       - echo $(ls)
       - cd
@@ -47,5 +76,9 @@ artifacts:
   files:
     - backend/authService/authService
     - backend/authService/config.json
+    - backend/api/config.json
+    - backend/api/package.json
+    - backend/api/yarn.lock
+    - backend/api/dist
     - appspec.yml
     - scripts/*
