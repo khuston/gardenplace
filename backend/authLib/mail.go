@@ -21,7 +21,7 @@ type SMTPVerificationMailer struct {
 
 func (mailer SMTPVerificationMailer) SendMail(to string, subject string, body string) error {
 
-	msg := []byte("From: " + mailer.FromName + "\r\n" +
+	msg := []byte("From: " + mailer.From.Address + "\r\n" +
 		"To: " + to + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"Date: " + time.Now().Format(time.RFC1123Z) + "\r\n" +
@@ -41,9 +41,11 @@ func (mailer SMTPVerificationMailer) SendMail(to string, subject string, body st
 	err := smtp.SendMail(mailer.Endpoint+":25", auth, mailer.From.Address, []string{to}, msg)
 
 	if err != nil {
-		fmt.Println("[OK]", "Encountered error attempting to mail: ", err)
+		fmt.Println("[ERROR]", "Encountered error attempting to mail: ", err)
+		fmt.Printf("[INFO] mailer: %+v\n", mailer)
+		fmt.Println("[INFO] mailer.From.Address: ", mailer.From.Address)
 	} else {
-		fmt.Println("[OK]", "Mailed without error.")
+		fmt.Println("[OK]", "Mailed successfully.")
 	}
 
 	return err

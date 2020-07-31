@@ -26,7 +26,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("[OK] Configuration loaded without error. Initializing database pool...")
+	fmt.Println("[OK] Configuration loaded. Initializing database pool...")
 
 	db, err := authLib.InitUserDBConnection(configuration.UserDBConnectionString)
 
@@ -35,7 +35,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("[OK] Database pool initialized without error. Initializing SMTP Verification Mailer...")
+	fmt.Println("[OK] Database pool initialized. Initializing SMTP Verification Mailer...")
 
 	smtpFrom, err := mail.ParseAddress(configuration.SMTPFrom)
 
@@ -47,7 +47,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("[OK] SMTP Verification mailer initialized without error. Initializing handlers...")
+	fmt.Println("[OK] SMTP Verification mailer initialized. Initializing handlers...")
 
 	loginHandler := authLib.LoginHandler{DB: db, SecureCookies: configuration.UseTLS}
 
