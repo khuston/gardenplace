@@ -1,0 +1,14 @@
+{
+    "host": "{DB_HOST}",
+    "user": "{DB_USERNAME}",
+    "password": "{DB_PASSWORD}",
+    "allowedOrigins": ["https://www.showandtell.page"],
+    "useTLS": true,
+    "port": 3000,
+    "s3Endpoint": "{S3_ENDPOINT}",
+    "s3Bucket": "{S3_BUCKET}",
+    "s3KeyRootDir": "{S3_KEY_ROOT_DIR}",
+    "s3AccessKeyId": "{S3_ACCESS_KEY_ID}",
+    "s3SecretAccessKey": "{S3_SECRET_ACCESS_KEY}",
+    "region": "{AWS_REGION}"
+}
