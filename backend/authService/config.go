@@ -17,6 +17,7 @@ type Configuration struct {
 	SMTPPassword           string
 	SMTPFrom               string
 	SMTPFromName           string
+	SMTPReturnPath         string
 	VerifyEndpoint         string
 }
 

@@ -12,11 +12,12 @@ type Mailer interface {
 }
 
 type SMTPVerificationMailer struct {
-	Endpoint string
-	Username string
-	Password string
-	From     *mail.Address
-	FromName string
+	Endpoint   string
+	Username   string
+	Password   string
+	From       *mail.Address
+	FromName   string
+	ReturnPath *mail.Address
 }
 
 func (mailer SMTPVerificationMailer) SendMail(to string, subject string, body string) error {
@@ -28,6 +29,7 @@ func (mailer SMTPVerificationMailer) SendMail(to string, subject string, body st
 		"Mime-Version: 1.0;\r\n" +
 		"Content-Type: text/html; charset=\"ISO-8859-1\";\r\n" +
 		"Content-Transfer-Encoding: 7bit;\r\n" +
+		"Return-Path: " + mailer.ReturnPath.Address + "\r\n" +
 		"\r\n" + body)
 
 	var auth smtp.Auth = nil

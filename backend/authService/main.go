@@ -39,8 +39,10 @@ func main() {
 
 	smtpFrom, err := mail.ParseAddress(configuration.SMTPFrom)
 
+	smtpReturnPath, err := mail.ParseAddress(configuration.SMTPReturnPath)
+
 	mailer := authLib.SMTPVerificationMailer{Endpoint: configuration.SMTPEndpoint, Username: configuration.SMTPUsername, Password: configuration.SMTPPassword,
-		From: smtpFrom, FromName: configuration.SMTPFromName}
+		From: smtpFrom, FromName: configuration.SMTPFromName, ReturnPath: smtpReturnPath}
 
 	if err != nil {
 		fmt.Println("[ERROR] Error while initializing SMTP Verificatin Mailer: ", err)
