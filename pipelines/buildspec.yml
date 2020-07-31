@@ -39,12 +39,13 @@ phases:
       - cd backend/api
       - yarn build
       - cd ../..
+      - function replaceConfig { sed -i 's/{'$1'}/'${!1}'/' config.json; }
     finally:
       - echo $(ls)
   post_build:
     commands:
       - echo Creating config.json for authService...
-      - replaceConfig() { sed -i 's/{'$1'}/'${!1}'/' config.json; }
+      - function replaceConfig { sed -i 's/{'$1'}/'${!1}'/' config.json; }
       - cd backend/authService
       - cp configTemplate.json config.json
       - replaceConfig DB_USERNAME
@@ -77,7 +78,6 @@ artifacts:
   files:
     - backend/authService/authService
     - backend/authService/config.json
-    - backend/api/dist
     - backend/api/config.json
     - appspec.yml
     - scripts/*
