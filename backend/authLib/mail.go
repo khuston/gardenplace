@@ -1,6 +1,7 @@
 package authLib
 
 import (
+	"fmt"
 	"net/mail"
 	"net/smtp"
 	"time"
@@ -35,7 +36,15 @@ func (mailer SMTPVerificationMailer) SendMail(to string, subject string, body st
 		auth = smtp.PlainAuth("", mailer.Username, mailer.Password, mailer.Endpoint)
 	}
 
+	fmt.Println("Attempting to send mail via endpoint: " + mailer.Endpoint)
+
 	err := smtp.SendMail(mailer.Endpoint+":25", auth, mailer.From.Address, []string{to}, msg)
+
+	if err != nil {
+		fmt.Println("Encountered error attempting to mail: ", err)
+	} else {
+		fmt.Println("Mailed without error.")
+	}
 
 	return err
 }

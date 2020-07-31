@@ -44,7 +44,7 @@ func handleError(err error, writer http.ResponseWriter) {
 	} else if errors.As(err, &il) {
 		http.Error(writer, il.Error(), http.StatusUnauthorized)
 	} else {
-		log.Println(err.Error())
+		log.Println("[ERROR]", err.Error())
 		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
 }

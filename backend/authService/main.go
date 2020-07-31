@@ -15,27 +15,39 @@ import (
 )
 
 func main() {
-	// 1. Configure Dependencies
+	fmt.Println("[OK] authService started. Configuring dependencies...")
+
 	rand.Seed(time.Now().UTC().UnixNano())
 
 	configuration, err := LoadConfiguration()
 
 	if err != nil {
+		fmt.Println("[ERROR] Error while loading configuration: ", err)
 		return
 	}
+
+	fmt.Println("[OK] Configuration loaded without error. Initializing database pool...")
 
 	db, err := authLib.InitUserDBConnection(configuration.UserDBConnectionString)
 
 	if err != nil {
+		fmt.Println("[ERROR] Error while initializing database pool: ", err)
 		return
 	}
 
+	fmt.Println("[OK] Database pool initialized without error. Initializing SMTP Verification Mailer...")
+
 	smtpFrom, err := mail.ParseAddress(configuration.SMTPFrom)
+
 	mailer := authLib.SMTPVerificationMailer{Endpoint: configuration.SMTPEndpoint, Username: configuration.SMTPUsername, Password: configuration.SMTPPassword,
 		From: smtpFrom, FromName: configuration.SMTPFromName}
+
 	if err != nil {
+		fmt.Println("[ERROR] Error while initializing SMTP Verificatin Mailer: ", err)
 		return
 	}
+
+	fmt.Println("[OK] SMTP Verification mailer initialized without error. Initializing handlers...")
 
 	loginHandler := authLib.LoginHandler{DB: db, SecureCookies: configuration.UseTLS}
 
@@ -53,6 +65,8 @@ func main() {
 
 	serveVerificationWithCORS := comms.CORSHandler(verifyHandler, configuration.AllowedOriginURLs())
 
+	fmt.Println("[OK] Handlers initialized. Starting server...")
+
 	http.HandleFunc("/register", serveRegistrationWithCORS)
 
 	http.HandleFunc("/login", serveLoginWithCORS)
@@ -61,10 +75,8 @@ func main() {
 
 	http.HandleFunc("/verify", serveVerificationWithCORS)
 
-	// 2. Write Status
 	reportStatusAfterInitialize(configuration)
 
-	// 3. Start Server
 	port := strconv.FormatInt(configuration.Port, 10)
 
 	if configuration.UseTLS {
@@ -83,7 +95,7 @@ func main() {
 func reportStatusAfterInitialize(configuration Configuration) {
 	port := strconv.FormatInt(configuration.Port, 10)
 
-	logMessage := "Will listen on port " + port
+	logMessage := "[OK] Will listen on port " + port
 
 	if configuration.UseTLS {
 		logMessage = logMessage + " with TLS"
