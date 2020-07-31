@@ -52,7 +52,7 @@ phases:
       - sed -i 's/{DB_PORT}/'$DB_PORT'/' config.json
       - sed -i 's/{MAIL_ENDPOINT}/'$MAIL_ENDPOINT'/' config.json
       - sed -i 's/{MAIL_USERNAME}/'$MAIL_USERNAME'/' config.json
-      #- sed -i 's/{MAIL_PASSWORD}/'$MAIL_PASSWORD'/' config.json
+      - sed -i 's/{MAIL_PASSWORD}/'$MAIL_PASSWORD'/' config.json
       - cd ../..
       - echo Creating config.json for api...
       - cd backend/api
@@ -63,7 +63,7 @@ phases:
       - sed -i 's/{DB_PORT}/'$DB_PORT'/' config.json
       - sed -i 's/{MAIL_ENDPOINT}/'$MAIL_ENDPOINT'/' config.json
       - sed -i 's/{MAIL_USERNAME}/'$MAIL_USERNAME'/' config.json
-      #- sed -i 's/{MAIL_PASSWORD}/'$MAIL_PASSWORD'/' config.json
+      - sed -i 's/{MAIL_PASSWORD}/'$MAIL_PASSWORD'/' config.json
       - sed -i 's/{S3_ENDPOINT}/'$S3_ENDPOINT'/' config.json
       - sed -i 's/{S3_BUCKET}/'$S3_BUCKET'/' config.json
       - sed -i 's/{S3_KEY_ROOT_DIR}/'$S3_KEY_ROOT_DIR'/' config.json
