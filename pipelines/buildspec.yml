@@ -79,6 +79,6 @@ artifacts:
     - backend/api/config.json
     - backend/api/package.json
     - backend/api/yarn.lock
-    - backend/api/dist
+    - backend/api/dist/**/*
     - appspec.yml
     - scripts/*
