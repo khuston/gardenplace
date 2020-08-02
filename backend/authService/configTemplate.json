@@ -8,5 +8,6 @@
     "SMTPPassword": "{MAIL_PASSWORD}",
     "SMTPFrom": "no-reply@www.showandtell.page",
     "SMTPFromName": "Gardenplace Registration",
-    "VerifyEndpoint": "https://www.showandtell.page/gardenplace"
+    "SMTPReturnPath": "admin@showandtell.page",
+    "VerifyEndpoint": "https://www.showandtell.page/gardenplace/"
 }
