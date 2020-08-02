@@ -13,11 +13,16 @@ import { makeMasterLoader } from "./loaders/master";
 import { Context } from "./loaders/types";
 import { makeImageCreator } from "./imageCreator"
 import https from "https"
+import * as fs from "fs"
 
 // Load Configuration, Initialize DB and AWS API
 const config = loadConfig();
 
+console.log("[OK] Configuration loaded. Initializing database pool...")
+
 const dbPool = initDBPool(config);
+
+console.log("[OK] Database pool initialized. Initializing S3 service interface...")
 
 const s3 = new AWS.S3({
     endpoint: config.s3Endpoint,
@@ -36,6 +41,8 @@ const s3Params: S3Params = {
 
 // One-time initialization
 const imageCreator = makeImageCreator(dbPool, s3, s3Params);
+
+console.log("[OK] S3 service interface initialized. Initializing request handlers...")
 
 // Create request handlers
 const corsHandler = cors({origin: config.allowedOrigins, optionsSuccessStatus: 200})
@@ -94,11 +101,15 @@ const app = express();
 
 app.use('/graphql', corsHandler, cookieParser(), awaitMiddleware(authHandler), awaitMiddleware(nonceHandler), awaitMiddleware(graphqlHandler));
 
+console.log("[OK] Request handlers initialized. Will listen on port " + port.toString() + (config.useTLS ? " with TLS." : "without TLS."))
+
 if (config.useTLS) {
     const httpsOptions = {
-        cert: "/etc/letsencrypt/live/gardenplace.showandtell.page/fullchain.pem",
-        key: "/etc/letsencrypt/live/gardenplace.showandtell.page/privkey.pem"
+        cert: fs.readFileSync("/etc/letsencrypt/live/gardenplace.showandtell.page/fullchain.pem").toString(),
+        key: fs.readFileSync("/etc/letsencrypt/live/gardenplace.showandtell.page/privkey.pem").toString()
     }
+
+    console.log("[INFO] Starting https server with options " + JSON.stringify(httpsOptions))
 
     https.createServer(httpsOptions, app).listen(port);
 }
