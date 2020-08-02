@@ -109,8 +109,6 @@ if (config.useTLS) {
         key: fs.readFileSync("/etc/letsencrypt/live/gardenplace.showandtell.page/privkey.pem").toString()
     }
 
-    global.console.log("[INFO] Starting https server with options " + JSON.stringify(httpsOptions))
-
     https.createServer(httpsOptions, app).listen(port);
 }
 else {
