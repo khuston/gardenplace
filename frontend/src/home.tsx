@@ -48,7 +48,7 @@ function MyPlants(props: PropsWithLoggedIn) {
     return(
         <div>
             <NewPlant />
-            {PlantPreview}
+            <PlantPreview />
         </div>
     )
 }

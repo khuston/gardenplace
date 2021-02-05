@@ -45,7 +45,11 @@ const imageCreator = makeImageCreator(dbPool, s3, s3Params);
 global.console.log("[OK] S3 service interface initialized. Initializing request handlers...")
 
 // Create request handlers
-const corsHandler = cors({origin: config.allowedOrigins, optionsSuccessStatus: 200})
+const corsHandler = cors({
+    origin: config.allowedOrigins,
+    optionsSuccessStatus: 200,
+    credentials: true
+})
 
 const authHandler = makeAuthHandler(dbPool, config.useTLS)
 
@@ -103,7 +107,7 @@ const app = express();
 
 app.use('/graphql', corsHandler, cookieParser(), awaitMiddleware(authHandler), awaitMiddleware(nonceHandler), awaitMiddleware(graphqlHandler));
 
-global.console.log("[OK] Request handlers initialized. Will listen on port " + port.toString() + (config.useTLS ? " with TLS." : "without TLS."))
+global.console.log("[OK] Request handlers initialized. Will listen on port " + port.toString() + (config.useTLS ? " with TLS." : " without TLS."))
 
 if (config.useTLS) {
     const httpsOptions = {

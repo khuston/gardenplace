@@ -4,7 +4,7 @@ const login_endpoint = gardenplaceConfiguration.serverUrl + ":9001/login";
 const logout_endpoint = gardenplaceConfiguration.serverUrl + ":9001/logout";
 const registration_endpoint = gardenplaceConfiguration.serverUrl + ":9001/register";
 const verification_endpoint = gardenplaceConfiguration.serverUrl + ":9001/verify";
-const api_endpoint = gardenplaceConfiguration.serverUrl + ":9002/api"
+const api_endpoint = gardenplaceConfiguration.serverUrl + ":9002/graphql";
 
 export function registerUser(email: string, password: string, password_reentered: string, handleSuccess: VoidFunction, handleError: (reason: any) => void) {
     let payload = make_registration_payload(email, password, password_reentered);
@@ -78,9 +78,17 @@ export function verifyEmail(code: string, handleSuccess: VoidFunction, handleFai
         })
 }
 
+const pingQuery = {
+    query: `query {
+        currentUser {
+            name
+        }
+    }`
+}
+
 export function checkLoggedIn(setLoggedIn: (b: boolean) => void): void {
 
-    Axios.post(api_endpoint, {}, { withCredentials: true })
+    Axios.post(api_endpoint, pingQuery, { withCredentials: true })
         .then((response: AxiosResponse) => {
             if (response && response.status === 200) {
                 setLoggedIn(true)

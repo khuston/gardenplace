@@ -14,7 +14,7 @@ function App(props: any) {
     // bearing in mind that the cookies are http-only.
     const [loggedIn, setLoggedIn] = useState<boolean>(false);
 
-    checkLoggedIn(setLoggedIn)
+    checkLoggedIn(setLoggedIn);
 
     function handleLogin() {
         setLoggedIn(true);

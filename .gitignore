@@ -7,3 +7,4 @@ __debug_*
 *.log
 *.css.d.*
 __generated__
+frontend/static

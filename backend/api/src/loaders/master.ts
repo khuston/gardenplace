@@ -12,7 +12,7 @@ import { makePostLoader } from "./postLoader"
 export function makeMasterLoader(dbPool: DBPool, userID: ID): MasterLoader {
 
     return ({
-            currentUser: (_: IDable, args: any, context: ContextWithLoaders, info: any) => this.user(userID, args, context, info),
+            get currentUser() {return (obj: IDable, args: any, context: ContextWithLoaders, info: any) => this.user(obj, {...args, id: userID}, context, info)},
             user: makeUserLoader(dbPool),
             plant: makePlantLoader(dbPool),
             garden: makeGardenLoader(dbPool),
