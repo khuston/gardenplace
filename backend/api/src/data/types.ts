@@ -35,6 +35,7 @@ export function getID(obj: IDable | null, args: any) {
 }
 
 export interface Query {
+    currentUser: (obj: IDable, args: any, context: any, info: any) => Promise<User>
     user: (obj: IDable, args: any, context: any, info: any) => Promise<User>
     plant: (obj: IDable, args: any, context: any, info: any) => Promise<Plant>
     garden: (obj: IDable, args: any, context: any, info: any) => Promise<Garden>

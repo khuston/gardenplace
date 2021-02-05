@@ -1,15 +1,18 @@
 import { MasterLoader } from "./types"
+import { ContextWithLoaders } from "./types"
 import { DBPool } from "../db"
 import { makeUserLoader } from "./userLoader"
 import { makeConnectionLoader } from "./connectionLoader"
 import { makePlantLoader } from "./plantLoader"
-import { User, Plant, Garden, Post } from "../data/types"
+import { ID } from "../data/primitives"
+import { IDable, User, Plant, Garden, Post } from "../data/types"
 import { makeGardenLoader } from "./gardenLoader"
 import { makePostLoader } from "./postLoader"
 
-export function makeMasterLoader(dbPool: DBPool): MasterLoader {
+export function makeMasterLoader(dbPool: DBPool, userID: ID): MasterLoader {
 
     return ({
+            currentUser: (_: IDable, args: any, context: ContextWithLoaders, info: any) => this.user(userID, args, context, info),
             user: makeUserLoader(dbPool),
             plant: makePlantLoader(dbPool),
             garden: makeGardenLoader(dbPool),

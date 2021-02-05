@@ -1,18 +1,18 @@
 import * as React from "react";
 import { useState } from "react";
 import { CommonHeader } from "./header"
-import { PropsWithLoggedInSetter } from "./props"
+import { PropsWithHandleLogout } from "./props"
 import * as styles from "./css/gardenplace.css"
 
 
-export function NewPlant(props: PropsWithLoggedInSetter) {
+export function NewPlant(props: PropsWithHandleLogout) {
     const [name, setName] = useState<string>("")
     const [disabled, setDisabled] = useState<boolean>(false)
     const [files, setFiles] = useState<FileList>()
 
     return (
         <div>
-            <CommonHeader setLoggedIn={props.setLoggedIn}/>
+            <CommonHeader handleLogout={props.handleLogout}/>
             <h2>Add a New Plant</h2>
 
             <input className={styles.newPlantInput} type="text" name="name" placeholder="Plant name"

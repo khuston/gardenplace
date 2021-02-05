@@ -3,7 +3,7 @@ import { DBPool } from "./db"
 import mysql from "mysql";
 import { ID } from "./data/primitives"
 
-interface RequestWithUserID extends express.Request {
+export interface RequestWithUserID extends express.Request {
     userID: ID
     sessionID: ID
 };

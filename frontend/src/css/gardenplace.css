@@ -59,3 +59,11 @@ img.my-plants-thumbnail {
     display: block;
     margin: 0.3em;
 }
+
+.plant-preview-name {
+    display: block;
+}
+
+.plant-preview-description {
+    display: block;
+}

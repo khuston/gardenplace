@@ -5,7 +5,7 @@ import { useHistory } from "react-router-dom";
 import { PropsWithLoggedIn } from "../props";
 import * as styles from "../css/gardenplace.css"
 
-export function VerifyEmail(props: PropsWithLoggedIn & PropsWithVerificationCode) {
+export function VerifyEmail(props: PropsWithVerificationCode) {
 
     let alreadySubmitted = !(props.verificationCode === undefined)
 

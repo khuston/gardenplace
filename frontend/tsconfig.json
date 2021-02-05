@@ -4,8 +4,8 @@
         "noImplicitAny": true,
         "alwaysStrict": true,
         "moduleResolution": "node",
-        "module": "es6",
-        "target": "es5",
+        "module": "es2015",
+        "target": "es2015",
         "jsx": "react",
         "allowJs": true,
         "typeRoots" : ["node_modules/@types", "./src/@types"]

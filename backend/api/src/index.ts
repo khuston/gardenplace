@@ -2,11 +2,11 @@ import express from "express";
 import cookieParser from "cookie-parser"
 import cors from "cors";
 import { graphqlHTTP } from "express-graphql";
-import { schema } from "./data/schema"
+import { buildSchema } from "graphql";
 import { makeRootValue } from "./root"
 import { loadConfig } from "./config"
 import { initDBPool } from "./db"
-import { makeAuthHandler, makeNonceHandler } from "./auth"
+import { makeAuthHandler, makeNonceHandler, RequestWithUserID } from "./auth"
 import { S3Params } from "./imageCreator"
 import AWS from "aws-sdk";
 import { makeMasterLoader } from "./loaders/master";
@@ -51,12 +51,14 @@ const authHandler = makeAuthHandler(dbPool, config.useTLS)
 
 const nonceHandler = makeNonceHandler(dbPool, config.useTLS, 100000000)
 
-const graphqlHandler = graphqlHTTP(async () => {
+const schema = buildSchema(fs.readFileSync(config.graphQLSchema).toString())
+
+const graphqlHandler = graphqlHTTP(async (request: express.Request) => {
 
      // This arrow function is called once per request.
 
     // Cache lifetime is 1 request.
-    const load = makeMasterLoader(dbPool)
+    const load = makeMasterLoader(dbPool, (request as RequestWithUserID).userID)
 
     // Override the default field resolver, which omits `source` from arguments.
     function fieldResolver(source: any, args: any, contextValue: any, info: any) {

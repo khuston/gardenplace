@@ -1,0 +1,122 @@
+scalar DateTime
+
+type User {
+    id: ID!
+    name: String
+    email: String!
+    gardenConnection(next: Int, previous: Int, after: ID, before: ID): GardenConnection!
+    ownedGardenConnection(next: Int, previous: Int, after: ID, before: ID): GardenConnection!
+    plantConnection(next: Int, previous: Int, after: ID, before: ID): PlantConnection!
+    followeeConnection(next: Int, previous: Int, after: ID, before: ID): UserConnection!
+    followerConnection(next: Int, previous: Int, after: ID, before: ID): UserConnection!
+    postConnection(next: Int, previous: Int, after: ID, before: ID): PostConnection!
+}
+
+type Garden {
+    name: String!
+    plantConnection(next: Int, previous: Int, after: ID, before: ID): PlantConnection!
+    gardenerConnection(next: Int, previous: Int, after: ID, before: ID): UserConnection!
+    ownerConnection(next: Int, previous: Int, after: ID, before: ID): UserConnection!
+    imageConnection(next: Int, previous: Int, after: ID, before: ID): ImageConnection!
+}
+
+type Plant {
+    id: ID!
+    name: String!
+    garden: Garden
+    imageConnection(next: Int, previous: Int, after: ID, before: ID): ImageConnection!
+}
+
+type Post {
+    author: User!
+    firstPublished: DateTime!
+    lastEdited: DateTime
+    text: String!
+    imageConnection(next: Int, previous: Int, after: ID, before: ID): ImageConnection!
+}
+
+type Image {
+    url: String!
+    uploaded: DateTime!
+    description: String!
+}
+
+type PendingImage {
+    uploadUrl: String!
+}
+
+type UserConnection {
+    totalCount: Int!
+    edges: [UserEdge]!
+    pageInfo: PageInfo
+}
+
+type GardenConnection {
+    totalCount: Int!
+    edges: [GardenEdge]!
+    pageInfo: PageInfo
+}
+
+type PlantConnection {
+    totalCount: Int!
+    edges: [PlantEdge]!
+    pageInfo: PageInfo
+}
+
+type PostConnection {
+    totalCount: Int!
+    edges: [PostEdge]!
+    pageInfo: PageInfo
+}
+
+type ImageConnection {
+    totalCount: Int!
+    edges: [ImageEdge]!
+    pageInfo: PageInfo
+}
+
+type UserEdge {
+    cursor: ID!
+    node: User
+}
+
+type GardenEdge {
+    cursor: ID!
+    node: Garden
+}
+
+type PlantEdge {
+    cursor: ID!
+    node: Plant
+}
+
+type PostEdge {
+    cursor: ID!
+    node: Post
+}
+
+type ImageEdge {
+    cursor: ID!
+    node: Image
+}
+
+type PageInfo {
+    hasPreviousPage: Boolean!
+    hasNextPage: Boolean!
+    startCursor: ID!
+    endCursor: ID!
+}
+
+type QueryRoot {
+    currentUser: User
+    user(id: ID!): User
+}
+
+type MutationRoot {
+    createImageForPlant(plantID: ID!, fileExt: String!, description: String!): PendingImage!
+}
+
+schema {
+    query: QueryRoot
+    mutation: MutationRoot
+}

@@ -3,11 +3,12 @@ import { useState } from "react";
 import { loginUser, registerUser, LoginPayload, RegistrationPayload } from "./auth";
 import { useHistory } from "react-router-dom";
 import { AxiosError } from "axios"
-import { PropsWithLoggedInSetter } from "../props";
+import { PropsWithHandleLogin } from "../props";
 import * as styles from "../css/gardenplace.css"
 
-function Welcome(props: PropsWithLoggedInSetter) {
+function Welcome(props: PropsWithHandleLogin) {
     const [registerPopup, setRegisterPopup] = useState(false)
+    const history = useHistory();
 
     const [fields, setFields] = useState<LoginPayload & RegistrationPayload>({
         email: "",
@@ -25,6 +26,12 @@ function Welcome(props: PropsWithLoggedInSetter) {
         })
     }
 
+    function handleLogin() {
+        props.handleLogin();
+
+        history.push("/");
+    }
+
     return (
         <div>
             <h1>Gardenplace</h1>
@@ -34,7 +41,7 @@ function Welcome(props: PropsWithLoggedInSetter) {
                 </div>
                 <div className={styles.homeUserPane}>
                     <LoginBox isPopped={!registerPopup} popup={() => setRegisterPopup(false)} fields={fields} onChange={handleFieldChange} 
-                        disabled={disabled} setDisabled={setDisabled} setLoggedIn={props.setLoggedIn} />
+                        disabled={disabled} setDisabled={setDisabled} handleLogin={handleLogin} />
                     <RegisterBox isPopped={registerPopup} popup={() => setRegisterPopup(true)} fields={fields} onChange={handleFieldChange}
                         disabled={disabled} setDisabled={setDisabled} />
                 </div>
@@ -62,7 +69,7 @@ interface PropsWithAuthFields {
 }
 
 
-function LoginBox(props: PropsWithLoggedInSetter & PoppableProp & PropWithDisabled & PropWithDisabledSetter & PropsWithAuthFields) {
+function LoginBox(props: PropsWithHandleLogin & PoppableProp & PropWithDisabled & PropWithDisabledSetter & PropsWithAuthFields) {
     if (props.isPopped) {
         return <BigLoginBox {...props} />
     }
@@ -96,16 +103,9 @@ function LittleRegisterBox(props: PoppableProp & PropWithDisabled) {
     )
 }
 
-function BigLoginBox(props: PropsWithLoggedInSetter & PoppableProp & PropWithDisabled & PropWithDisabledSetter & PropsWithAuthFields) {
-    const history = useHistory();
-
+function BigLoginBox(props: PropsWithHandleLogin & PoppableProp & PropWithDisabled & PropWithDisabledSetter & PropsWithAuthFields) {
     const [loginStatus, setLoginStatus] = useState("");
-
-    function handleLoginSuccess() {
-        props.setLoggedIn(true);
-
-        history.push("/");
-    }
+    const history = useHistory();
 
     function handleLoginError(error: AxiosError) {
         if (error.response) {
@@ -133,7 +133,7 @@ function BigLoginBox(props: PropsWithLoggedInSetter & PoppableProp & PropWithDis
 
         const { email, password } = props.fields;
 
-        loginUser(email, password, handleLoginSuccess, handleLoginError, () => {}, handleRequireEmailVerification);
+        loginUser(email, password, props.handleLogin, handleLoginError, () => {}, handleRequireEmailVerification);
 
         return false; // Prevent default submit behavior since we override it
     }

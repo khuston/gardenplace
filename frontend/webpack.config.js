@@ -1,6 +1,14 @@
 const HtmlWebPackPlugin = require("html-webpack-plugin");
 const webpack = require("webpack")
+const RelayCompilerLanguageTypescript = require('relay-compiler-language-typescript').default
+const RelayCompilerWebpackPlugin = require('relay-compiler-webpack-plugin')
+const path = require('path')
 
+// todo: code splitting
+// https://gist.github.com/gaearon/ca6e803f5c604d37468b0091d9959269
+// https://gist.github.com/gaearon/ca6e803f5c604d37468b0091d9959269
+// todo: Error boundaries
+// https://reactjs.org/docs/error-boundaries.html
 module.exports = env => {
 
     const is_production_mode = env && env.production;
@@ -26,7 +34,13 @@ module.exports = env => {
                 {
                     test: /\.tsx?$/,
                     exclude: /node_modules/,
-                    use: 'ts-loader',
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            "presets": ["@babel/preset-env", "@babel/preset-react", "@babel/preset-typescript"],
+                            "plugins": ["relay"]
+                        }
+                    }
                 },
                 {
                     test: /\.html$/,
@@ -40,6 +54,11 @@ module.exports = env => {
             ]
         },
         plugins: [
+            new RelayCompilerWebpackPlugin({
+                languagePlugin: RelayCompilerLanguageTypescript,
+                schema: path.resolve(__dirname, "../shared/schema.graphql"),
+                src: path.resolve(__dirname, "./src"),
+            }),
             new HtmlWebPackPlugin({
                 template:  "./src/index.html",
                 filename: "./index.html"

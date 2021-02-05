@@ -1,13 +1,16 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import Welcome from "./auth/login";
 import { useLocation } from "react-router-dom";
 import { VerificationWaitingPage } from "./auth/verify_email";
 import { CommonHeader } from "./header"
-import { PropsWithLoggedIn, PropsWithLoggedInSetter } from "./props"
+import { PropsWithLoggedIn, PropsWithHandleLogin, PropsWithHandleLogout } from "./props"
 import * as styles from "./css/gardenplace.css"
+import PlantPreview from "./relay/renderers/plantPreview"
+import { ID } from "./primitives"
 
-function Home(props: PropsWithLoggedIn & PropsWithLoggedInSetter) {
+function Home(props: PropsWithLoggedIn & PropsWithHandleLogin & PropsWithHandleLogout) {
 
     let verificationCode = (new URLSearchParams(useLocation().search)).get("verification_code")
 
@@ -22,12 +25,14 @@ function Home(props: PropsWithLoggedIn & PropsWithLoggedInSetter) {
     }
 }
 
-function LoggedInHome(props: PropsWithLoggedIn & PropsWithLoggedInSetter) {
+function LoggedInHome(props: PropsWithLoggedIn & PropsWithHandleLogout) {
+    const [cookies, setCookie, removeCookie] = useCookies(['cookie-name']);
+
     return (
         <div>
-            <CommonHeader setLoggedIn={props.setLoggedIn}/>
+            <CommonHeader handleLogout={props.handleLogout}/>
             <h2>My Plants</h2>
-            <MyPlants myPlants={[{imageUrl: ""}, {imageUrl: ""}]}/>
+            <MyPlants {...props} />
             <h2>Recent Activity</h2>
             <RecentActivity />
         </div>
@@ -38,21 +43,12 @@ interface Plant {
     imageUrl: string
 }
 
-interface PropsWithMyPlants {
-    myPlants: Array<Plant>
-}
-
-function MyPlants(props: PropsWithMyPlants) {
-
-    const myPlants = props.myPlants.map((plant) =>
-        <img className={styles.myPlantsThumbnail}
-            key={plant.imageUrl} src={plant.imageUrl} />
-        );
+function MyPlants(props: PropsWithLoggedIn) {
 
     return(
         <div>
             <NewPlant />
-            {myPlants}
+            {PlantPreview}
         </div>
     )
 }

@@ -6,3 +6,4 @@ config.json
 __debug_*
 *.log
 *.css.d.*
+__generated__

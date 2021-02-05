@@ -16,12 +16,23 @@ function App(props: any) {
 
     checkLoggedIn(setLoggedIn)
 
+    function handleLogin() {
+        setLoggedIn(true);
+    }
+
+    function handleLogout() {
+        setLoggedIn(false);
+    }
+
     return (
         <div>
             <BrowserRouter basename={gardenplaceConfiguration.routerBasename}>
                 <Switch>
                     <Route exact path={"/"} render={props => (
-                        <Home {... props} loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
+                        <Home {... props}
+                            loggedIn={loggedIn}
+                            handleLogin={handleLogin}
+                            handleLogout={handleLogout} />
                     )}
                     />
                     <Route exact path={"/about"} render={props => (
@@ -29,11 +40,11 @@ function App(props: any) {
                     )}
                     />
                     <Route exact path={"/verify_email"} render={props => (
-                        <VerifyEmail {... props} loggedIn={loggedIn} verificationCode={undefined} />
+                        <VerifyEmail {... props} verificationCode={undefined} />
                     )}
                     />
                     <Route exact path={"/new_plant"} render={props => (
-                        <NewPlant {... props} setLoggedIn={setLoggedIn} />
+                        <NewPlant {... props} handleLogout={handleLogout} />
                     )}
                     />
                     <Route exact path={"/register_twofactor"} render={props => (

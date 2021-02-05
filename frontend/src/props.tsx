@@ -1,9 +1,11 @@
-import * as React from "react";
-
 export interface PropsWithLoggedIn {
     loggedIn: boolean
 }
 
-export interface PropsWithLoggedInSetter {
-    setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
+export interface PropsWithHandleLogin {
+    handleLogin: VoidFunction
+}
+
+export interface PropsWithHandleLogout {
+    handleLogout: () => void
 }

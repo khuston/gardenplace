@@ -13,6 +13,7 @@ export interface Configuration {
     s3AccessKeyId: string
     s3SecretAccessKey: string
     region: string
+    graphQLSchema: string
 }
 
 function isValidConfiguration(config: any): boolean {

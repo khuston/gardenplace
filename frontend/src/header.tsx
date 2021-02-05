@@ -2,23 +2,23 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 import { logoutUser } from "./auth/auth";
 import { useHistory } from "react-router-dom";
-import { PropsWithLoggedInSetter } from "./props";
+import { PropsWithHandleLogout } from "./props";
 import * as styles from "./css/gardenplace.css"
 
-export function CommonHeader(props: PropsWithLoggedInSetter) {
+export function CommonHeader(props: PropsWithHandleLogout) {
     return (
         <div>
             <h1>Gardenplace</h1>
-            <Navbar setLoggedIn={props.setLoggedIn}></Navbar>
+            <Navbar handleLogout={props.handleLogout}></Navbar>
         </div>
     )
 }
 
-function Navbar(props: PropsWithLoggedInSetter) {
+function Navbar(props: PropsWithHandleLogout) {
     const history = useHistory()
 
     function onClickLogout(event: React.SyntheticEvent) {
-        logoutUser(() => { props.setLoggedIn(false) })
+        logoutUser(() => { props.handleLogout() })
         history.push("/")
     }
 
