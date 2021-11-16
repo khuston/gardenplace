@@ -22,7 +22,7 @@
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.6",
     "@types/mysql": "^2.15.15",
-    "aws-sdk": "^2.719.0",
+    "aws-sdk": "^2.814.0",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
     "dataloader": "^2.0.0",
